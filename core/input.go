@@ -6,7 +6,8 @@ type Input interface {
 }
 
 type BaseInput struct {
-	Codec Decoder
+	Name  string  `yaml:""`
+	Codec Decoder `yaml:"codec"`
 }
 
 func (*BaseInput) Start(ctx Context) error {

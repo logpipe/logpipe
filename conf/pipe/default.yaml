@@ -1,0 +1,7 @@
+input:
+  - name: stdin
+    cond:
+      - has_tag: aaa
+    codec: json
+output:
+  - stdout
