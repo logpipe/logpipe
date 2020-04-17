@@ -1,10 +1,8 @@
-package input
+package file
 
 import (
-	"../../core"
-	"../../engine"
-	"bufio"
-	"io"
+	"github.com/tk103331/logpipe/core"
+	"github.com/tk103331/logpipe/engine"
 	"os"
 )
 

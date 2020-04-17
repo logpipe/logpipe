@@ -1,12 +1,12 @@
 package engine
 
-import "../core"
+import "github.com/tk103331/logpipe/core"
 
 var (
-	inputs = make(map[string]InputBuilder)
+	inputs  = make(map[string]InputBuilder)
 	filters = make(map[string]FilterBuilder)
 	outputs = make(map[string]OutputBuilder)
-	codecs = make(map[string]CodecBuilder)
+	codecs  = make(map[string]CodecBuilder)
 )
 
 type InputBuilder func(ctx core.Context) core.Input

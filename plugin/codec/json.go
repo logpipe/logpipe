@@ -1,10 +1,10 @@
 package codec
 
 import (
-	"../../core"
-	"../../engine"
 	"encoding/json"
 	"errors"
+	"github.com/tk103331/logpipe/core"
+	"github.com/tk103331/logpipe/engine"
 )
 
 func init() {
