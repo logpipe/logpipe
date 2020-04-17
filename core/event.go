@@ -1,6 +1,9 @@
 package core
 
-import "time"
+import (
+	"sort"
+	"time"
+)
 
 type Event struct {
 	kind      string
@@ -62,6 +65,14 @@ func (e *Event) RemoveTag(tag string) {
 		}
 	}
 	e.tags = append(e.tags[0:index], e.tags[index:]...)
+}
+func (e *Event) SortTag(asc bool) {
+	if asc {
+		sort.Strings(e.tags)
+	} else {
+		reverse := sort.Reverse(sort.StringSlice(e.tags))
+		sort.Sort(reverse)
+	}
 }
 
 func (e *Event) HasField(field string) bool {

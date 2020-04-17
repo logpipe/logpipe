@@ -13,6 +13,7 @@ func init() {
 }
 
 type FileInput struct {
+	core.BaseInput
 	Path string
 	file *os.File
 }
@@ -28,7 +29,11 @@ func (i *FileInput) Start(ctx core.Context) error {
 			data := make([]byte, 1024)
 			n, e := i.file.Read(data)
 			if e == nil {
-				event := core.NewEvent("file", "localhost", string(data[0:n]))
+				var source interface{} = string(data[0:n])
+				if i.Codec != nil {
+					source, e = i.Codec.Decode(source)
+				}
+				event := core.NewEvent("file", "localhost", source)
 				ctx.Accept(event)
 			}
 		}

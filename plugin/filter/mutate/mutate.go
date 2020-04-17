@@ -34,30 +34,16 @@ type MutateOp interface {
 
 type MutateOpBuilder func(exp string) MutateOp
 
-type AddTagOp struct {
-	Tag string
-}
-
-func (o *AddTagOp) Exec(event *core.Event) error {
-	event.AddTag(o.Tag)
-	return nil
-}
-
-type AddFieldOp struct {
-	Field string
-	Value interface{}
-}
-
-func (o *AddFieldOp) Exec(event *core.Event) error {
-	event.AddField(o.Field, o.Value)
-	return nil
-}
-
 func initOps() {
 	OPS["add_tag"] = func(exp string) MutateOp {
 		return &AddTagOp{Tag: exp[6 : len(exp)-1]}
 	}
 	OPS["add_field"] = func(exp string) MutateOp {
+		p := exp[6 : len(exp)-1]
+		params := strings.Split(p, ",")
+		return &AddFieldOp{Field: params[0], Value: params[1]}
+	}
+	OPS["set_field"] = func(exp string) MutateOp {
 		p := exp[6 : len(exp)-1]
 		params := strings.Split(p, ",")
 		return &AddFieldOp{Field: params[0], Value: params[1]}
