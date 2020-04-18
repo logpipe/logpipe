@@ -1,5 +1,12 @@
 package core
 
+type OutputConf struct {
+	BaseConf
+	Name string
+	Kind string
+	Cond []*CondConf
+}
+
 type Output interface {
 	Start() error
 	Stop() error
@@ -7,7 +14,9 @@ type Output interface {
 }
 
 type BaseOutput struct {
-	Conf  string
+	Name  string
+	Kind  string
+	Cond  []*Cond
 	Codec Encoder
 }
 

@@ -1,14 +1,13 @@
-package codec
+package json
 
 import (
 	"encoding/json"
 	"errors"
 	"github.com/tk103331/logpipe/core"
-	"github.com/tk103331/logpipe/engine"
 )
 
 func init() {
-	engine.RegCodec("json", func(ctx core.Context) core.Codec {
+	core.RegCodec("json", func(conf core.CodecConf) core.Codec {
 		return &JSONCodec{}
 	})
 }

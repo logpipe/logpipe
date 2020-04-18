@@ -2,12 +2,11 @@ package file
 
 import (
 	"github.com/tk103331/logpipe/core"
-	"github.com/tk103331/logpipe/engine"
 	"os"
 )
 
 func init() {
-	engine.RegInput("file", func(ctx core.Context) core.Input {
+	core.RegInput("file", func(conf core.InputConf) core.Input {
 		return &FileInput{}
 	})
 }
@@ -41,7 +40,7 @@ func (i *FileInput) Start(ctx core.Context) error {
 	return nil
 }
 
-func (i *FileInput) Stop(ctx core.Context) error {
+func (i *FileInput) Stop() error {
 	err := i.file.Close()
 	return err
 }

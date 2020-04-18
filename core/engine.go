@@ -1,8 +1,6 @@
-package engine
+package core
 
 import (
-	"github.com/tk103331/logpipe/config"
-	"github.com/tk103331/logpipe/core"
 	"log"
 	"os"
 	"os/signal"
@@ -10,13 +8,14 @@ import (
 	"syscall"
 )
 
-var pipes = make(map[string]*core.Pipe)
+var pipes = make(map[string]*Pipe)
 var done = make(chan int)
 
 func Init() error {
-	pipeConf := config.GetPipeConf()
+	pipeConf := GetPipeConf()
 	for name, conf := range pipeConf {
-		pipe := core.NewPipe(name, conf.Spec)
+		pipe := &Pipe{}
+		pipe.Init(conf)
 		pipes[name] = pipe
 	}
 	return nil
@@ -26,7 +25,7 @@ func Start() error {
 	wg := sync.WaitGroup{}
 	wg.Add(len(pipes))
 	for name, pipe := range pipes {
-		go func(name string, p *core.Pipe) {
+		go func(name string, p *Pipe) {
 			log.Println("starting pipe: " + name)
 			p.Start()
 			wg.Done()
@@ -40,7 +39,7 @@ func Stop() {
 	wg := sync.WaitGroup{}
 	wg.Add(len(pipes))
 	for name, pipe := range pipes {
-		go func(name string, p *core.Pipe) {
+		go func(name string, p *Pipe) {
 			log.Println("stopping pipe: " + name)
 			p.Stop()
 			wg.Done()

@@ -2,7 +2,6 @@ package mutate
 
 import (
 	"github.com/tk103331/logpipe/core"
-	"github.com/tk103331/logpipe/engine"
 	"strings"
 )
 
@@ -12,7 +11,7 @@ func init() {
 
 	initOps()
 
-	engine.RegFilter("mutate", func(ctx core.Context) core.Filter {
+	core.RegFilter("mutate", func(conf core.FilterConf) core.Filter {
 		return &MutateFilter{}
 	})
 }

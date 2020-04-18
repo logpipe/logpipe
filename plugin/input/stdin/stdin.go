@@ -2,26 +2,27 @@ package stdin
 
 import (
 	"bufio"
-	"github.com/tk103331/logpipe/config"
 	"github.com/tk103331/logpipe/core"
-	"github.com/tk103331/logpipe/engine"
 	"os"
 )
 
 func init() {
-	engine.RegInput("stdin", func(ctx core.Context) core.Input {
-		value := config.Value{}
-		conf := StdinInputConf{}
-		conf.Load(value)
-		return &StdinInput{conf: conf}
+	core.RegInput("stdin", func(conf core.InputConf) core.Input {
+		inputConf := StdinInputConf{}
+		inputConf.Load(conf.Value())
+		return &StdinInput{conf: inputConf}
 	})
 }
 
 type StdinInputConf struct {
-	config.BaseConf
+	core.BaseConf
 	Value1 bool
 	Value2 string
 	Value3 int
+}
+
+func (c *StdinInputConf) Load(value *core.Value) error {
+	return c.BaseConf.Load(value)
 }
 
 type StdinInput struct {
@@ -35,7 +36,7 @@ func (s *StdinInput) Start(ctx core.Context) error {
 	return nil
 }
 
-func (s *StdinInput) Stop(ctx core.Context) error {
+func (s *StdinInput) Stop() error {
 	s.stopped = true
 	return nil
 }

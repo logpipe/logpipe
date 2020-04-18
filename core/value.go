@@ -1,4 +1,4 @@
-package config
+package core
 
 import (
 	"go.uber.org/config"
@@ -23,6 +23,24 @@ func (v *Value) GetArray(key string) []*Value {
 		}
 	}
 	return values
+}
+
+func (v *Value) GetString(key string) string {
+	var str string
+	_ = v.GetValue(key).Parse(&str)
+	return str
+}
+
+func (v *Value) GetInt(key string) int {
+	var val int
+	_ = v.GetValue(key).Parse(&val)
+	return val
+}
+
+func (v *Value) GetBool(key string) bool {
+	var val bool
+	_ = v.GetValue(key).Parse(&val)
+	return val
 }
 
 func (v *Value) Parse(target interface{}) error {

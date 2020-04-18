@@ -1,4 +1,4 @@
-package config
+package core
 
 import (
 	"fmt"
@@ -11,7 +11,28 @@ import (
 )
 
 var appConf = AppConf{}
-var pipeConf = make(map[string]BaseConf)
+var pipeConf = make(map[string]PipeConf)
+
+type AppConf struct {
+	Path string
+}
+
+type Conf interface {
+	Load(value *Value) error
+}
+
+type BaseConf struct {
+	value *Value
+}
+
+func (c *BaseConf) Load(value *Value) error {
+	c.value = value
+	return nil
+}
+
+func (c *BaseConf) Value() *Value {
+	return c.value
+}
 
 func LoadConf() error {
 
@@ -65,7 +86,7 @@ func loadPipeConf() error {
 				continue
 			}
 			value := yaml.Get("")
-			conf := BaseConf{}
+			conf := PipeConf{}
 			err = conf.Load(&Value{value: value})
 			if err != nil {
 				fmt.Println(err)
@@ -77,6 +98,6 @@ func loadPipeConf() error {
 	return nil
 }
 
-func GetPipeConf() map[string]BaseConf {
+func GetPipeConf() map[string]PipeConf {
 	return pipeConf
 }

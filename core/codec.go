@@ -12,3 +12,8 @@ type Encoder interface {
 type Decoder interface {
 	Decode(data interface{}) (Event, error)
 }
+
+type CodecConf struct {
+	BaseConf
+	Kind string
+}

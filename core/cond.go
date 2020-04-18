@@ -1,6 +1,13 @@
 package core
 
-import "strings"
+import (
+	"strings"
+)
+
+type CondConf struct {
+	BaseConf
+	Kind string
+}
 
 type Cond interface {
 	Name() string
