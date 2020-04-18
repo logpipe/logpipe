@@ -56,17 +56,22 @@ func loadPipeConf() error {
 	for _, fi := range dir {
 		name := fi.Name()
 		if !fi.IsDir() && (strings.HasSuffix(name, ".yaml") || strings.HasSuffix(name, ".yml")) {
-			log.Printf("loading pipe conf: " + name)
+			absPath := filepath.Join(path, name)
+			log.Printf("loading pipe conf: " + absPath)
 
-			yaml, err := config.NewYAML(config.File(filepath.Join(path, name)))
+			yaml, err := config.NewYAML(config.File(absPath), config.Permissive())
 			if err != nil {
 				fmt.Println(err)
 				continue
 			}
 			value := yaml.Get("")
 			conf := BaseConf{}
-			conf.Load(Value{value: value})
-			pipeConf[name] = conf
+			err = conf.Load(&Value{value: value})
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+			pipeConf[absPath] = conf
 		}
 	}
 	return nil

@@ -1,7 +1,12 @@
+name: default-pipe
 input:
-  - name: stdin
+  - name: stdin-input
+    kind: stdin
     cond:
       - has_tag: aaa
     codec: json
+    value1: true
+    value2: asdf
+    value3: 222
 output:
   - stdout

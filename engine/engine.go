@@ -16,7 +16,8 @@ var done = make(chan int)
 func Init() error {
 	pipeConf := config.GetPipeConf()
 	for name, conf := range pipeConf {
-
+		pipe := core.NewPipe(name, conf.Spec)
+		pipes[name] = pipe
 	}
 	return nil
 }

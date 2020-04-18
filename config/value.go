@@ -24,3 +24,7 @@ func (v *Value) GetArray(key string) []*Value {
 	}
 	return values
 }
+
+func (v *Value) Parse(target interface{}) error {
+	return v.value.Populate(target)
+}

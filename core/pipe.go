@@ -3,14 +3,17 @@ package core
 import "github.com/tk103331/logpipe/config"
 
 type Pipe struct {
+	conf    PipeConf
 	Ctx     Context
 	Inputs  []Input
 	Filters []Filter
 	Outputs []Output
 }
 
-func NewPipe(name string, value config.Value) *Pipe {
-
+func NewPipe(name string, value *config.Value) *Pipe {
+	conf := PipeConf{}
+	conf.Load(value)
+	return &Pipe{conf: conf}
 }
 
 func (p *Pipe) Start() {
@@ -35,14 +38,14 @@ func (p *Pipe) Stop() {
 
 type PipeConf struct {
 	config.BaseConf
-	Inputs  []*config.Value
-	Filters []*config.Value
-	Outputs []*config.Value
+	Inputs  []*config.BaseConf
+	Filters []*config.BaseConf
+	Outputs []*config.BaseConf
 }
 
-func (c *PipeConf) Load(value config.Value) {
-	c.BaseConf.Load(value)
-	c.Inputs = value.GetArray("input")
-	c.Inputs = value.GetArray("filter")
-	c.Outputs = value.GetArray("output")
+func (c *PipeConf) Load(value *config.Value) {
+	_ = c.BaseConf.Load(value)
+	c.Inputs = c.GetArray("input")
+	c.Filters = c.GetArray("filter")
+	c.Outputs = c.GetArray("output")
 }

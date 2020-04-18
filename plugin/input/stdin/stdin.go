@@ -2,12 +2,31 @@ package stdin
 
 import (
 	"bufio"
+	"github.com/tk103331/logpipe/config"
 	"github.com/tk103331/logpipe/core"
+	"github.com/tk103331/logpipe/engine"
 	"os"
 )
 
+func init() {
+	engine.RegInput("stdin", func(ctx core.Context) core.Input {
+		value := config.Value{}
+		conf := StdinInputConf{}
+		conf.Load(value)
+		return &StdinInput{conf: conf}
+	})
+}
+
+type StdinInputConf struct {
+	config.BaseConf
+	Value1 bool
+	Value2 string
+	Value3 int
+}
+
 type StdinInput struct {
 	core.BaseInput
+	conf    StdinInputConf
 	stopped bool
 }
 
