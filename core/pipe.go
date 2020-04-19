@@ -19,41 +19,47 @@ type PipeConf struct {
 func (c *PipeConf) Load(value *Value) error {
 	c.BaseConf.Load(value)
 	// parse input
-	input := value.GetValue("input")
-	var inputKinds []kind
-	input.Parse(&inputKinds)
-	c.inputs = make([]InputConf, len(inputKinds))
-	for i, k := range inputKinds {
-		if builder, ok := inputBuilders[k.Kind]; ok {
-			conf := builder.NewConf()
-			c.inputs[i] = conf
+	input := value.Get("input")
+	if input != nil && input.IsArray() {
+		values := input.Array()
+		c.inputs = make([]InputConf, len(values))
+		for i, v := range values {
+			kind := v.GetString("kind")
+			if builder, ok := inputBuilders[kind]; ok {
+				conf := builder.NewConf()
+				conf.Load(v)
+				c.inputs[i] = conf
+			}
 		}
 	}
-	input.Parse(&c.inputs)
 	// parse filter
-	filter := value.GetValue("filter")
-	var filterKinds []kind
-	filter.Parse(&filterKinds)
-	c.filters = make([]FilterConf, len(filterKinds))
-	for i, k := range filterKinds {
-		if builder, ok := filterBuilders[k.Kind]; ok {
-			conf := builder.NewConf()
-			c.filters[i] = conf
+	filter := value.Get("filter")
+	if filter != nil && filter.IsArray() {
+		values := filter.Array()
+		c.filters = make([]FilterConf, len(values))
+		for i, v := range values {
+			kind := v.GetString("kind")
+			if builder, ok := filterBuilders[kind]; ok {
+				conf := builder.NewConf()
+				conf.Load(v)
+				c.filters[i] = conf
+			}
 		}
 	}
-	filter.Parse(&c.filters)
-	// output filter
-	output := value.GetValue("output")
-	var outputKinds []kind
-	output.Parse(&outputKinds)
-	c.filters = make([]FilterConf, len(outputKinds))
-	for i, k := range outputKinds {
-		if builder, ok := outputBuilders[k.Kind]; ok {
-			conf := builder.NewConf()
-			c.outputs[i] = conf
+	// parse output
+	output := value.Get("output")
+	if output != nil && output.IsArray() {
+		values := output.Array()
+		c.outputs = make([]OutputConf, len(values))
+		for i, v := range values {
+			kind := v.GetString("kind")
+			if builder, ok := outputBuilders[kind]; ok {
+				conf := builder.NewConf()
+				conf.Load(v)
+				c.outputs[i] = conf
+			}
 		}
 	}
-	output.Parse(&c.filters)
 	return value.Parse(c)
 }
 
@@ -77,26 +83,37 @@ func (p *Pipe) Init(pipeConf PipeConf) {
 	}
 	p.filters = make([]Filter, len(pipeConf.filters))
 	for i, conf := range pipeConf.filters {
-		kind := conf.Kind
+		kind := conf.GetKind()
 		if builder, ok := filterBuilders[kind]; ok {
 			p.filters[i] = builder.Build(conf)
 		}
 	}
 	p.outputs = make([]Output, len(pipeConf.outputs))
 	for i, conf := range pipeConf.outputs {
-		kind := conf.Kind
+		kind := conf.GetKind()
 		if builder, ok := outputBuilders[kind]; ok {
 			p.outputs[i] = builder.Build(conf)
 		}
 	}
+	p.ctx = Context{pipe: p}
 }
 
 func (p *Pipe) Start() {
 	for _, output := range p.outputs {
-		output.Start()
+		if output != nil {
+			err := output.Start()
+			if err != nil {
+				log.Println(err)
+			}
+		}
 	}
 	for _, input := range p.inputs {
-		input.Start(p.ctx)
+		if input != nil {
+			err := input.Start(p.ctx)
+			if err != nil {
+				log.Println(err)
+			}
+		}
 	}
 }
 
@@ -119,14 +136,23 @@ func (p *Pipe) Stop() {
 
 func (p *Pipe) Input(event Event) {
 	temp := event
-	for _, filter := range p.filters {
-		if !temp.IsEmpty() {
-			temp = filter.Filter(temp)
+	if p.filters != nil && len(p.filters) > 0 {
+		for _, filter := range p.filters {
+			if !temp.IsEmpty() {
+				temp = filter.Filter(temp)
+			}
 		}
 	}
-	for _, output := range p.outputs {
-		if !temp.IsEmpty() {
-			output.Output(temp)
+	if p.outputs != nil && len(p.outputs) > 0 {
+		for _, output := range p.outputs {
+			if !temp.IsEmpty() {
+				if output != nil {
+					err := output.Output(temp)
+					if err != nil {
+						log.Println(err)
+					}
+				}
+			}
 		}
 	}
 }

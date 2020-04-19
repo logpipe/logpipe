@@ -20,7 +20,7 @@ func (s *StdinInputBuilder) NewConf() core.InputConf {
 }
 
 func (s *StdinInputBuilder) Build(conf core.InputConf) core.Input {
-	panic("implement me")
+	return &StdinInput{conf: StdinInputConf{}}
 }
 
 type StdinInputConf struct {
@@ -35,7 +35,7 @@ func (c *StdinInputConf) GetKind() string {
 }
 
 func (c *StdinInputConf) Load(value *core.Value) error {
-	return c.BaseConf.Load(value)
+	return value.Parse(c)
 }
 
 type StdinInput struct {

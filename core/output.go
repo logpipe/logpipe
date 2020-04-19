@@ -1,10 +1,16 @@
 package core
 
-type OutputConf struct {
+type OutputConf interface {
+	Conf
+	NameConf
+	KindConf
+}
+
+type BaseOutputConf struct {
 	BaseConf
-	Name string
-	Kind string
-	Cond []*CondConf
+	BaseNameConf
+	BaseKindConf
+	Codec CodecConf
 }
 
 type Output interface {

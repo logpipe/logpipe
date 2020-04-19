@@ -1,8 +1,7 @@
 package core
 
 import (
-	"fmt"
-	"go.uber.org/config"
+	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"log"
 	"os"
@@ -79,15 +78,22 @@ func loadAppConf() error {
 		appConfPath = filepath.Join(appConfPath, "logpipe.yaml")
 	}
 	appConfPath, err = filepath.Abs(appConfPath)
-	yaml, err := config.NewYAML(config.File(appConfPath))
 	if err != nil {
 		return err
 	}
-	pipePath := yaml.Get("path").String()
-	if !filepath.IsAbs(pipePath) {
-		pipePath = filepath.Join(filepath.Dir(appConfPath), pipePath)
+	confFile, err := os.Open(appConfPath)
+	if err != nil {
+		return err
 	}
-	appConf.Path = pipePath
+	defer confFile.Close()
+	decoder := yaml.NewDecoder(confFile)
+	err = decoder.Decode(&appConf)
+	if err != nil {
+		return err
+	}
+	if !filepath.IsAbs(appConf.Path) {
+		appConf.Path = filepath.Join(filepath.Dir(appConfPath), appConf.Path)
+	}
 	return nil
 }
 
@@ -104,21 +110,33 @@ func loadPipeConf() error {
 			absPath := filepath.Join(path, name)
 			log.Printf("loading pipe conf: " + absPath)
 
-			yaml, err := config.NewYAML(config.File(absPath), config.Permissive())
+			err := readPipeConf(absPath)
 			if err != nil {
-				fmt.Println(err)
-				continue
+				log.Println(err)
 			}
-			value := yaml.Get("")
-			conf := PipeConf{}
-			err = conf.Load(&Value{value: value})
-			if err != nil {
-				fmt.Println(err)
-				continue
-			}
-			pipeConf[absPath] = conf
 		}
 	}
+	return nil
+}
+
+func readPipeConf(path string) error {
+	file, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	decoder := yaml.NewDecoder(file)
+	var node yaml.Node
+	decoder.Decode(&node)
+	if node.Kind == yaml.DocumentNode {
+		node = *node.Content[0]
+	}
+	conf := PipeConf{}
+	err = conf.Load(&Value{node: &node})
+	if err != nil {
+		return err
+	}
+	pipeConf[path] = conf
 	return nil
 }
 

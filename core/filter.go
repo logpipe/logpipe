@@ -1,6 +1,12 @@
 package core
 
-type FilterConf struct {
+type FilterConf interface {
+	Conf
+	NameConf
+	KindConf
+}
+
+type BaseFilterConf struct {
 	BaseConf
 	Name string
 	Kind string

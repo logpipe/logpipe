@@ -9,7 +9,7 @@ input:
     value3: 222
 output:
   - name: stdout-output
-    kind: sdtout
+    kind: stdout
     cond:
       - add_tag: xxx
     codec:
