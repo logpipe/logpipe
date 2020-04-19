@@ -11,9 +11,7 @@ func init() {
 
 	initOps()
 
-	core.RegFilter("mutate", func(conf core.FilterConf) core.Filter {
-		return &MutateFilter{}
-	})
+	core.RegFilter("mutate", nil)
 }
 
 type MutateFilter struct {

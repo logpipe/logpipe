@@ -5,10 +5,10 @@ import (
 	"os"
 )
 
+const INPUT_NAME = "file"
+
 func init() {
-	core.RegInput("file", func(conf core.InputConf) core.Input {
-		return &FileInput{}
-	})
+	core.RegInput(INPUT_NAME, &FileInputBuilder{})
 }
 
 type FileInput struct {
@@ -43,4 +43,21 @@ func (i *FileInput) Start(ctx core.Context) error {
 func (i *FileInput) Stop() error {
 	err := i.file.Close()
 	return err
+}
+
+type FileInputConf struct {
+	core.BaseInputConf
+	Path string
+}
+
+type FileInputBuilder struct {
+}
+
+func (b *FileInputBuilder) NewConf() core.InputConf {
+	return &FileInputConf{}
+}
+
+func (b *FileInputBuilder) Build(conf core.InputConf) core.Input {
+	inputConf := conf.(*FileInputConf)
+	return &FileInput{Path: inputConf.Path}
 }

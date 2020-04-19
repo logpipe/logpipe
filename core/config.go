@@ -21,6 +21,30 @@ type Conf interface {
 	Load(value *Value) error
 }
 
+type KindConf interface {
+	GetKind() string
+}
+
+type BaseKindConf struct {
+	Kind string
+}
+
+func (c *BaseKindConf) GetKind() string {
+	return c.Kind
+}
+
+type NameConf interface {
+	GetName() string
+}
+
+type BaseNameConf struct {
+	Name string
+}
+
+func (c *BaseNameConf) GetName() string {
+	return c.Name
+}
+
 type BaseConf struct {
 	value *Value
 }

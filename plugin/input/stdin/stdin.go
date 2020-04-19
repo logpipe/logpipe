@@ -6,19 +6,32 @@ import (
 	"os"
 )
 
+const INPUT_NAME = "stdin"
+
 func init() {
-	core.RegInput("stdin", func(conf core.InputConf) core.Input {
-		inputConf := StdinInputConf{}
-		inputConf.Load(conf.Value())
-		return &StdinInput{conf: inputConf}
-	})
+	core.RegInput(INPUT_NAME, &StdinInputBuilder{})
+}
+
+type StdinInputBuilder struct {
+}
+
+func (s *StdinInputBuilder) NewConf() core.InputConf {
+	return &StdinInputConf{}
+}
+
+func (s *StdinInputBuilder) Build(conf core.InputConf) core.Input {
+	panic("implement me")
 }
 
 type StdinInputConf struct {
-	core.BaseConf
+	core.BaseInputConf
 	Value1 bool
 	Value2 string
 	Value3 int
+}
+
+func (c *StdinInputConf) GetKind() string {
+	return INPUT_NAME
 }
 
 func (c *StdinInputConf) Load(value *core.Value) error {

@@ -7,10 +7,22 @@ var (
 	codecBuilders  = make(map[string]CodecBuilder)
 )
 
-type InputBuilder func(conf InputConf) Input
-type FilterBuilder func(conf FilterConf) Filter
-type OutputBuilder func(conf OutputConf) Output
-type CodecBuilder func(conf CodecConf) Codec
+type InputBuilder interface {
+	NewConf() InputConf
+	Build(conf InputConf) Input
+}
+type FilterBuilder interface {
+	NewConf() FilterConf
+	Build(conf FilterConf) Filter
+}
+type OutputBuilder interface {
+	NewConf() OutputConf
+	Build(conf OutputConf) Output
+}
+type CodecBuilder interface {
+	NewConf() CodecConf
+	Build(conf CodecConf) Codec
+}
 
 func RegInput(name string, builder InputBuilder) {
 	inputBuilders[name] = builder

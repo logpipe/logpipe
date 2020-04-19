@@ -1,17 +1,5 @@
 package core
 
-type InputConf struct {
-	BaseConf
-	Name  string
-	Kind  string
-	Codec *CodecConf
-}
-
-func (c *InputConf) Load(value *Value) error {
-
-	return value.Parse(c)
-}
-
 type Input interface {
 	Start(ctx Context) error
 	Stop() error
@@ -28,4 +16,20 @@ func (*BaseInput) Start(ctx Context) error {
 }
 func (*BaseInput) Stop() error {
 	return nil
+}
+
+type InputConf interface {
+	Conf
+	NameConf
+	KindConf
+}
+type BaseInputConf struct {
+	BaseConf
+	BaseNameConf
+	BaseKindConf
+	Codec CodecConf
+}
+
+func (c *BaseInputConf) Load(value *Value) error {
+	return value.Parse(c)
 }

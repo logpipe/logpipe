@@ -13,7 +13,11 @@ type Decoder interface {
 	Decode(data interface{}) (Event, error)
 }
 
-type CodecConf struct {
+type CodecConf interface {
+	KindConf
+}
+
+type BaseCodecConf struct {
 	BaseConf
-	Kind string
+	BaseKindConf
 }

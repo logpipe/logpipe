@@ -12,6 +12,7 @@ type Event struct {
 	source    interface{}
 	fields    map[string]interface{}
 	tags      []string
+	empty     bool
 }
 
 func NewEvent(kind string, host string, source interface{}) Event {
@@ -19,6 +20,10 @@ func NewEvent(kind string, host string, source interface{}) Event {
 	fields := make(map[string]interface{})
 	tags := make([]string, 0)
 	return Event{kind: kind, host: host, timestamp: timestamp, source: source, fields: fields, tags: tags}
+}
+
+func NewEmptyEvent() Event {
+	return Event{empty: true}
 }
 
 func (e *Event) SetKind(kind string) {
@@ -41,6 +46,10 @@ func (e *Event) Timestamp() int64 {
 
 func (e *Event) Source() interface{} {
 	return e.source
+}
+
+func (e *Event) IsEmpty() bool {
+	return e.empty
 }
 
 func (e *Event) HasTag(tag string) bool {

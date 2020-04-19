@@ -7,9 +7,22 @@ import (
 )
 
 func init() {
-	core.RegCodec("json", func(conf core.CodecConf) core.Codec {
-		return &JSONCodec{}
-	})
+	core.RegCodec("json", &JSONCodecBuilder{})
+}
+
+type JSONCodecBuilder struct {
+}
+
+func (J JSONCodecBuilder) NewConf() core.CodecConf {
+	return JSONCodecConf{}
+}
+
+func (J JSONCodecBuilder) Build(conf core.CodecConf) core.Codec {
+	panic("implement me")
+}
+
+type JSONCodecConf struct {
+	core.CodecConf
 }
 
 type JSONCodec struct {
