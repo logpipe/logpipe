@@ -1,6 +1,7 @@
 package mutate
 
 import (
+	"github.com/tk103331/logpipe/config"
 	"github.com/tk103331/logpipe/core"
 	"strings"
 )
@@ -11,7 +12,9 @@ func init() {
 
 	initOps()
 
-	core.RegFilter("mutate", nil)
+	core.RegFilter("mutate", func(conf config.FilterConf) core.Filter {
+		return &MutateFilter{}
+	})
 }
 
 type MutateFilter struct {

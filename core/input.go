@@ -17,19 +17,3 @@ func (*BaseInput) Start(ctx Context) error {
 func (*BaseInput) Stop() error {
 	return nil
 }
-
-type InputConf interface {
-	Conf
-	NameConf
-	KindConf
-}
-type BaseInputConf struct {
-	BaseConf
-	BaseNameConf
-	BaseKindConf
-	Codec CodecConf
-}
-
-func (c *BaseInputConf) Load(value *Value) error {
-	return value.Parse(c)
-}

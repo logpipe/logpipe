@@ -1,18 +1,5 @@
 package core
 
-type FilterConf interface {
-	Conf
-	NameConf
-	KindConf
-}
-
-type BaseFilterConf struct {
-	BaseConf
-	Name string
-	Kind string
-	Cond *CondConf
-}
-
 type Filter interface {
 	Filter(event Event) Event
 }

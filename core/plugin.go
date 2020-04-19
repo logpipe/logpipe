@@ -1,5 +1,7 @@
 package core
 
+import "github.com/tk103331/logpipe/config"
+
 var (
 	inputBuilders  = make(map[string]InputBuilder)
 	filterBuilders = make(map[string]FilterBuilder)
@@ -7,22 +9,10 @@ var (
 	codecBuilders  = make(map[string]CodecBuilder)
 )
 
-type InputBuilder interface {
-	NewConf() InputConf
-	Build(conf InputConf) Input
-}
-type FilterBuilder interface {
-	NewConf() FilterConf
-	Build(conf FilterConf) Filter
-}
-type OutputBuilder interface {
-	NewConf() OutputConf
-	Build(conf OutputConf) Output
-}
-type CodecBuilder interface {
-	NewConf() CodecConf
-	Build(conf CodecConf) Codec
-}
+type InputBuilder func(conf config.InputConf) Input
+type FilterBuilder func(conf config.FilterConf) Filter
+type OutputBuilder func(conf config.OutputConf) Output
+type CodecBuilder func(conf config.CodecConf) Codec
 
 func RegInput(name string, builder InputBuilder) {
 	inputBuilders[name] = builder

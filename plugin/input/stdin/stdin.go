@@ -2,45 +2,30 @@ package stdin
 
 import (
 	"bufio"
+	"github.com/tk103331/logpipe/config"
 	"github.com/tk103331/logpipe/core"
 	"os"
 )
 
-const INPUT_NAME = "stdin"
-
 func init() {
-	core.RegInput(INPUT_NAME, &StdinInputBuilder{})
+	core.RegInput("stdin", func(conf config.InputConf) core.Input {
+		var spec StdinInputSpec
+		conf.Spec().Parse(&spec)
+		return &StdinInput{}
+	})
 }
 
-type StdinInputBuilder struct {
-}
-
-func (s *StdinInputBuilder) NewConf() core.InputConf {
-	return &StdinInputConf{}
-}
-
-func (s *StdinInputBuilder) Build(conf core.InputConf) core.Input {
-	return &StdinInput{conf: StdinInputConf{}}
-}
-
-type StdinInputConf struct {
-	core.BaseInputConf
+type StdinInputSpec struct {
 	Value1 bool
 	Value2 string
 	Value3 int
 }
 
-func (c *StdinInputConf) GetKind() string {
-	return INPUT_NAME
-}
-
-func (c *StdinInputConf) Load(value *core.Value) error {
-	return value.Parse(c)
-}
-
 type StdinInput struct {
-	core.BaseInput
-	conf    StdinInputConf
+	name    string
+	king    string
+	codec   core.Decoder
+	spec    StdinInputSpec
 	stopped bool
 }
 
@@ -59,8 +44,8 @@ func (s *StdinInput) run(ctx core.Context) {
 	for !s.stopped {
 		bytes, _, _ := reader.ReadLine()
 		str := string(bytes)
-		if s.Codec != nil {
-			event, _ := s.Codec.Decode(str)
+		if s.codec != nil {
+			event, _ := s.codec.Decode(str)
 			ctx.Accept(event)
 		} else {
 			event := core.NewEvent("stdin", "localhost", string(bytes))

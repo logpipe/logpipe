@@ -1,14 +1,15 @@
 package file
 
 import (
+	"github.com/tk103331/logpipe/config"
 	"github.com/tk103331/logpipe/core"
 	"os"
 )
 
-const INPUT_NAME = "file"
-
 func init() {
-	core.RegInput(INPUT_NAME, &FileInputBuilder{})
+	core.RegInput("file", func(conf config.InputConf) core.Input {
+		return &FileInput{}
+	})
 }
 
 type FileInput struct {
@@ -43,21 +44,4 @@ func (i *FileInput) Start(ctx core.Context) error {
 func (i *FileInput) Stop() error {
 	err := i.file.Close()
 	return err
-}
-
-type FileInputConf struct {
-	core.BaseInputConf
-	Path string
-}
-
-type FileInputBuilder struct {
-}
-
-func (b *FileInputBuilder) NewConf() core.InputConf {
-	return &FileInputConf{}
-}
-
-func (b *FileInputBuilder) Build(conf core.InputConf) core.Input {
-	inputConf := conf.(*FileInputConf)
-	return &FileInput{Path: inputConf.Path}
 }

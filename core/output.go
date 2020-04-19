@@ -1,18 +1,5 @@
 package core
 
-type OutputConf interface {
-	Conf
-	NameConf
-	KindConf
-}
-
-type BaseOutputConf struct {
-	BaseConf
-	BaseNameConf
-	BaseKindConf
-	Codec CodecConf
-}
-
 type Output interface {
 	Start() error
 	Stop() error

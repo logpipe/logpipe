@@ -1,4 +1,4 @@
-package core
+package config
 
 import (
 	"gopkg.in/yaml.v3"
@@ -10,51 +10,14 @@ import (
 )
 
 var appConf = AppConf{}
-var pipeConf = make(map[string]PipeConf)
+
+func init() {
+	appConf.Pipes = make(map[string]PipeConf)
+}
 
 type AppConf struct {
-	Path string
-}
-
-type Conf interface {
-	Load(value *Value) error
-}
-
-type KindConf interface {
-	GetKind() string
-}
-
-type BaseKindConf struct {
-	Kind string
-}
-
-func (c *BaseKindConf) GetKind() string {
-	return c.Kind
-}
-
-type NameConf interface {
-	GetName() string
-}
-
-type BaseNameConf struct {
-	Name string
-}
-
-func (c *BaseNameConf) GetName() string {
-	return c.Name
-}
-
-type BaseConf struct {
-	value *Value
-}
-
-func (c *BaseConf) Load(value *Value) error {
-	c.value = value
-	return nil
-}
-
-func (c *BaseConf) Value() *Value {
-	return c.value
+	Path  string
+	Pipes map[string]PipeConf
 }
 
 func LoadConf() error {
@@ -106,7 +69,7 @@ func loadPipeConf() error {
 	}
 	for _, fi := range dir {
 		name := fi.Name()
-		if !fi.IsDir() && (strings.HasSuffix(name, ".yaml") || strings.HasSuffix(name, ".yml")) {
+		if !fi.IsDir() && (strings.HasSuffix(name, ".yaml")) {
 			absPath := filepath.Join(path, name)
 			log.Printf("loading pipe conf: " + absPath)
 
@@ -132,14 +95,14 @@ func readPipeConf(path string) error {
 		node = *node.Content[0]
 	}
 	conf := PipeConf{}
-	err = conf.Load(&Value{node: &node})
+	node.Decode(&conf)
 	if err != nil {
 		return err
 	}
-	pipeConf[path] = conf
+	appConf.Pipes[path] = conf
 	return nil
 }
 
-func GetPipeConf() map[string]PipeConf {
-	return pipeConf
+func GetAppConf() AppConf {
+	return appConf
 }

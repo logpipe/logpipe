@@ -1,17 +1,26 @@
 name: default-pipe
-input:
+inputs:
   - name: stdin-input
     kind: stdin
     codec:
       kind: json
-    value1: true
-    value2: asdf
-    value3: 222
-output:
+      spec:
+        test: vvv
+    spec:
+      value1: true
+      value2: asdf
+      value3: 222
+outputs:
   - name: stdout-output
     kind: stdout
     cond:
       - add_tag: xxx
     codec:
       kind: json
+      spec:
+        test: vvv
+    spec:
+      value1: true
+      value2: asdf
+      value3: 222
 

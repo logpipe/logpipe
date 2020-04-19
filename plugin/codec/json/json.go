@@ -3,26 +3,14 @@ package json
 import (
 	"encoding/json"
 	"errors"
+	"github.com/tk103331/logpipe/config"
 	"github.com/tk103331/logpipe/core"
 )
 
 func init() {
-	core.RegCodec("json", &JSONCodecBuilder{})
-}
-
-type JSONCodecBuilder struct {
-}
-
-func (J JSONCodecBuilder) NewConf() core.CodecConf {
-	return JSONCodecConf{}
-}
-
-func (J JSONCodecBuilder) Build(conf core.CodecConf) core.Codec {
-	panic("implement me")
-}
-
-type JSONCodecConf struct {
-	core.CodecConf
+	core.RegCodec("json", func(conf config.CodecConf) core.Codec {
+		return &JSONCodec{}
+	})
 }
 
 type JSONCodec struct {

@@ -1,6 +1,7 @@
 package core
 
 import (
+	"github.com/tk103331/logpipe/config"
 	"log"
 	"os"
 	"os/signal"
@@ -12,7 +13,7 @@ var pipes = make(map[string]*Pipe)
 var done = make(chan int)
 
 func Init() error {
-	pipeConf := GetPipeConf()
+	pipeConf := config.GetAppConf().Pipes
 	for name, conf := range pipeConf {
 		pipe := &Pipe{}
 		pipe.Init(conf)

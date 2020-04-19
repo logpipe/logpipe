@@ -4,11 +4,6 @@ import (
 	"strings"
 )
 
-type CondConf struct {
-	BaseConf
-	Kind string
-}
-
 type Cond interface {
 	Name() string
 	Test(event Event) bool

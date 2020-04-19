@@ -1,4 +1,4 @@
-package core
+package config
 
 import (
 	"gopkg.in/yaml.v3"
@@ -6,6 +6,11 @@ import (
 
 type Value struct {
 	node *yaml.Node
+}
+
+func (v *Value) UnmarshalYAML(value *yaml.Node) error {
+	v.node = value
+	return nil
 }
 
 func (v *Value) IsMap() bool {
@@ -72,6 +77,6 @@ func (v *Value) GetBool(key string) bool {
 	return val
 }
 
-func (v *Value) Parse(target interface{}) error {
+func (v Value) Parse(target interface{}) error {
 	return v.node.Decode(target)
 }
