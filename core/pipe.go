@@ -19,25 +19,34 @@ func (p *Pipe) Init(pipeConf config.PipeConf) {
 	p.inputs = make([]Input, len(pipeConf.Inputs))
 	for i, conf := range pipeConf.Inputs {
 		kind := conf.Kind()
+		codec := buildCodec(conf.Codec())
 		if builder, ok := inputBuilders[kind]; ok {
-			p.inputs[i] = builder(conf)
+			p.inputs[i] = builder(conf.Name(), codec, conf.Spec())
 		}
 	}
 	p.filters = make([]Filter, len(pipeConf.Filters))
 	for i, conf := range pipeConf.Filters {
 		kind := conf.Kind()
 		if builder, ok := filterBuilders[kind]; ok {
-			p.filters[i] = builder(conf)
+			p.filters[i] = builder(conf.Name(), conf.Spec())
 		}
 	}
 	p.outputs = make([]Output, len(pipeConf.Outputs))
 	for i, conf := range pipeConf.Outputs {
 		kind := conf.Kind()
+		codec := buildCodec(conf.Codec())
 		if builder, ok := outputBuilders[kind]; ok {
-			p.outputs[i] = builder(conf)
+			p.outputs[i] = builder(conf.Name(), codec, conf.Spec())
 		}
 	}
 	p.ctx = Context{pipe: p}
+}
+
+func buildCodec(conf config.CodecConf) Codec {
+	if builder, ok := codecBuilders[conf.Kind()]; ok {
+		return builder(conf.Spec())
+	}
+	return nil
 }
 
 func (p *Pipe) Start() {

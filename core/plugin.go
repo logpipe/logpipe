@@ -9,10 +9,10 @@ var (
 	codecBuilders  = make(map[string]CodecBuilder)
 )
 
-type InputBuilder func(conf config.InputConf) Input
-type FilterBuilder func(conf config.FilterConf) Filter
-type OutputBuilder func(conf config.OutputConf) Output
-type CodecBuilder func(conf config.CodecConf) Codec
+type InputBuilder func(name string, codec Codec, spec config.Value) Input
+type FilterBuilder func(name string, spec config.Value) Filter
+type OutputBuilder func(name string, codec Codec, spec config.Value) Output
+type CodecBuilder func(spec config.Value) Codec
 
 func RegInput(name string, builder InputBuilder) {
 	inputBuilders[name] = builder

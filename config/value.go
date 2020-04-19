@@ -32,7 +32,7 @@ func (v *Value) Get(key string) *Value {
 			}
 		}
 	}
-	return nil
+	return &Value{}
 }
 
 func (v *Value) Map() map[string]*Value {
@@ -78,5 +78,8 @@ func (v *Value) GetBool(key string) bool {
 }
 
 func (v Value) Parse(target interface{}) error {
-	return v.node.Decode(target)
+	if v.node != nil {
+		return v.node.Decode(target)
+	}
+	return nil
 }

@@ -6,8 +6,3 @@ type PipeConf struct {
 	Filters []FilterConf
 	Outputs []OutputConf
 }
-
-type CondConf struct {
-	Kind string
-	Spec string
-}
