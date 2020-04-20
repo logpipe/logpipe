@@ -26,6 +26,10 @@ func (i *OutputConf) Codec() CodecConf {
 	return i.codec
 }
 
+func (i *OutputConf) Cond() []CondConf {
+	return i.cond
+}
+
 func (i *OutputConf) UnmarshalYAML(node *yaml.Node) error {
 	value := Value{node: node}
 	i.name = value.GetString("name")

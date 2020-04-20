@@ -11,24 +11,31 @@ type Pipe struct {
 	name     string
 	conf     config.PipeConf
 	consumer func(event core.Event)
-	inputs   []core.Input
-	filters  []core.Filter
-	outputs  []core.Output
+	inputs   []InputNode
+	filters  []FilterNode
+	outputs  []OutputNode
 }
 
 func (p *Pipe) Init(pipeConf config.PipeConf) {
 	p.conf = pipeConf
-	p.inputs = make([]core.Input, len(pipeConf.Inputs()))
+	p.inputs = make([]InputNode, len(pipeConf.Inputs()))
 	for i, conf := range pipeConf.Inputs() {
-		p.inputs[i] = plugin.BuildInput(conf)
+		input := plugin.BuildInput(conf)
+		actions := core.BuildActions(conf.Action())
+		p.inputs[i] = InputNode{input: input, action: actions}
 	}
-	p.filters = make([]core.Filter, len(pipeConf.Filters()))
+	p.filters = make([]FilterNode, len(pipeConf.Filters()))
 	for i, conf := range pipeConf.Filters() {
-		p.filters[i] = plugin.BuildFilter(conf)
+		filter := plugin.BuildFilter(conf)
+		cond := core.BuildConds(conf.Cond())
+		actions := core.BuildActions(conf.Action())
+		p.filters[i] = FilterNode{filter: filter, cond: cond, action: actions}
 	}
-	p.outputs = make([]core.Output, len(pipeConf.Outputs()))
+	p.outputs = make([]OutputNode, len(pipeConf.Outputs()))
 	for i, conf := range pipeConf.Outputs() {
-		p.outputs[i] = plugin.BuildOutput(conf)
+		output := plugin.BuildOutput(conf)
+		cond := core.BuildConds(conf.Cond())
+		p.outputs[i] = OutputNode{output: output, cond: cond}
 	}
 	if p.conf.Async() {
 		p.consumer = func(event core.Event) {
@@ -42,17 +49,22 @@ func (p *Pipe) Init(pipeConf config.PipeConf) {
 }
 
 func (p *Pipe) Start() {
-	for _, output := range p.outputs {
-		if output != nil {
-			err := output.Start()
+	for _, node := range p.outputs {
+		if node.output != nil {
+			err := node.output.Start()
 			if err != nil {
 				log.Println(err)
 			}
 		}
 	}
-	for _, input := range p.inputs {
-		if input != nil {
-			err := input.Start(p.input)
+	for _, node := range p.inputs {
+		if node.input != nil {
+			err := node.input.Start(func(event core.Event) {
+				if node.action != nil && len(node.action) > 0 {
+					node.action.Exec(&event)
+				}
+				p.consumer(event)
+			})
 			if err != nil {
 				log.Println(err)
 			}
@@ -62,17 +74,21 @@ func (p *Pipe) Start() {
 
 func (p *Pipe) Stop() {
 
-	for _, input := range p.inputs {
-		err := input.Stop()
-		if err != nil {
-			log.Println(err)
+	for _, node := range p.inputs {
+		if node.input != nil {
+			err := node.input.Stop()
+			if err != nil {
+				log.Println(err)
+			}
 		}
 	}
 
-	for _, output := range p.outputs {
-		err := output.Stop()
-		if err != nil {
-			log.Println(err)
+	for _, node := range p.outputs {
+		if node.output != nil {
+			err := node.output.Stop()
+			if err != nil {
+				log.Println(err)
+			}
 		}
 	}
 }
@@ -80,20 +96,31 @@ func (p *Pipe) Stop() {
 func (p *Pipe) input(event core.Event) {
 	temp := event
 	if p.filters != nil && len(p.filters) > 0 {
-		for _, filter := range p.filters {
-			if !temp.IsEmpty() {
-				temp = filter.Filter(temp)
+		for _, node := range p.filters {
+			if !temp.IsEmpty() && node.filter != nil {
+				if node.cond != nil && len(node.cond) > 0 {
+					if !node.cond.Test(event) {
+						continue
+					}
+				}
+				temp = node.filter.Filter(temp)
+				if node.action != nil && len(node.action) > 0 {
+					node.action.Exec(&event)
+				}
 			}
 		}
 	}
 	if p.outputs != nil && len(p.outputs) > 0 {
-		for _, output := range p.outputs {
-			if !temp.IsEmpty() {
-				if output != nil {
-					err := output.Output(temp)
-					if err != nil {
-						log.Println(err)
+		for _, node := range p.outputs {
+			if !temp.IsEmpty() && node.output != nil {
+				if node.cond != nil && len(node.cond) > 0 {
+					if !node.cond.Test(event) {
+						continue
 					}
+				}
+				err := node.output.Output(temp)
+				if err != nil {
+					log.Println(err)
 				}
 			}
 		}

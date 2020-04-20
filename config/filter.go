@@ -3,10 +3,11 @@ package config
 import "gopkg.in/yaml.v3"
 
 type FilterConf struct {
-	name string
-	kind string
-	cond []CondConf
-	spec Value
+	name   string
+	kind   string
+	cond   []CondConf
+	action []ActionConf
+	spec   Value
 }
 
 func (c *FilterConf) Name() string {
@@ -21,11 +22,23 @@ func (c *FilterConf) Spec() Value {
 	return c.spec
 }
 
+func (c *FilterConf) Cond() []CondConf {
+	return c.cond
+}
+
+func (c *FilterConf) Action() []ActionConf {
+	return c.action
+}
+
 func (c *FilterConf) UnmarshalYAML(node *yaml.Node) error {
 	value := Value{node: node}
 	c.name = value.GetString("name")
 	c.kind = value.GetString("kind")
 	err := value.Get("cond").Parse(&(c.cond))
+	if err != nil {
+		return err
+	}
+	err = value.Get("action").Parse(&(c.action))
 	if err != nil {
 		return err
 	}

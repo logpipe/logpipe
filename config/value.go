@@ -35,6 +35,9 @@ func (v *Value) IsScalar() bool {
 }
 
 func (v *Value) Get(key string) *Value {
+	if key == "" {
+		return v
+	}
 	if v.node.Kind == yaml.MappingNode {
 		for i := 0; i < len(v.node.Content); i = i + 2 {
 			k := v.node.Content[i].Value
@@ -70,18 +73,28 @@ func (v *Value) Array() []*Value {
 	return nil
 }
 
+func (v *Value) String() string {
+	return v.GetString("")
+}
+
 func (v *Value) GetString(key string) string {
 	var str string
 	_ = v.Get(key).Parse(&str)
 	return str
 }
 
+func (v *Value) Int() int {
+	return v.GetInt("")
+}
 func (v *Value) GetInt(key string) int {
 	var val int
 	_ = v.Get(key).Parse(&val)
 	return val
 }
 
+func (v *Value) Bool() bool {
+	return v.GetBool("")
+}
 func (v *Value) GetBool(key string) bool {
 	var val bool
 	_ = v.Get(key).Parse(&val)

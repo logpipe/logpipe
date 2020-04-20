@@ -1,23 +1,21 @@
 package config
 
-import (
-	"gopkg.in/yaml.v3"
-)
+import "gopkg.in/yaml.v3"
 
-type CondConf struct {
+type ActionConf struct {
 	kind string
 	spec Value
 }
 
-func (c *CondConf) Kind() string {
+func (c *ActionConf) Kind() string {
 	return c.kind
 }
 
-func (c *CondConf) Spec() Value {
+func (c *ActionConf) Spec() Value {
 	return c.spec
 }
 
-func (c *CondConf) UnmarshalYAML(node *yaml.Node) error {
+func (c *ActionConf) UnmarshalYAML(node *yaml.Node) error {
 	value := Value{node}
 	c.kind = value.GetString("kind")
 	err := value.Get("spec").Parse(&c.spec)

@@ -3,36 +3,45 @@ package config
 import "gopkg.in/yaml.v3"
 
 type InputConf struct {
-	name  string
-	kind  string
-	codec CodecConf
-	spec  Value
+	name   string
+	kind   string
+	codec  CodecConf
+	action []ActionConf
+	spec   Value
 }
 
-func (i *InputConf) Name() string {
-	return i.name
+func (c *InputConf) Name() string {
+	return c.name
 }
 
-func (i *InputConf) Kind() string {
-	return i.kind
+func (c *InputConf) Kind() string {
+	return c.kind
 }
 
-func (i *InputConf) Spec() Value {
-	return i.spec
+func (c *InputConf) Spec() Value {
+	return c.spec
 }
 
-func (i *InputConf) Codec() CodecConf {
-	return i.codec
+func (c *InputConf) Codec() CodecConf {
+	return c.codec
 }
 
-func (i *InputConf) UnmarshalYAML(node *yaml.Node) error {
+func (c *InputConf) Action() []ActionConf {
+	return c.action
+}
+
+func (c *InputConf) UnmarshalYAML(node *yaml.Node) error {
 	value := Value{node: node}
-	i.name = value.GetString("name")
-	i.kind = value.GetString("kind")
-	err := value.Get("codec").Parse(&(i.codec))
+	c.name = value.GetString("name")
+	c.kind = value.GetString("kind")
+	err := value.Get("codec").Parse(&(c.codec))
 	if err != nil {
 		return err
 	}
-	i.spec = *value.Get("spec")
+	err = value.Get("action").Parse(&(c.action))
+	if err != nil {
+		return err
+	}
+	c.spec = *value.Get("spec")
 	return nil
 }
