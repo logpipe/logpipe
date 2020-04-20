@@ -16,13 +16,21 @@ type JSONCodec struct {
 }
 
 func (*JSONCodec) Encode(event core.Event) (interface{}, error) {
-	bytes, err := json.Marshal(event)
+	bytes, err := json.Marshal(event.Map())
 	return string(bytes), err
 }
 func (*JSONCodec) Decode(data interface{}) (core.Event, error) {
-	event := core.Event{}
+	event := core.NewEvent(data)
+	var fields map[string]interface{}
 	if str, ok := data.(string); ok {
-		err := json.Unmarshal([]byte(str), &event)
+		err := json.Unmarshal([]byte(str), &fields)
+		if err != nil {
+			event.AddTag("_jsonparsefailure")
+		} else {
+			for k, v := range fields {
+				event.AddField(k, v)
+			}
+		}
 		return event, err
 	}
 	return event, errors.New("unsupported")

@@ -42,10 +42,14 @@ func (s *StdinInput) run(consumer func(event core.Event)) {
 		bytes, _, _ := reader.ReadLine()
 		str := string(bytes)
 		if s.codec != nil {
-			event, _ := s.codec.Decode(str)
-			consumer(event)
+			event, err := s.codec.Decode(str)
+			if err != nil {
+				consumer(core.NewEmptyEvent())
+			} else {
+				consumer(event)
+			}
 		} else {
-			event := core.NewEvent("stdin", "localhost", string(bytes))
+			event := core.NewEvent(str)
 			consumer(event)
 		}
 	}
@@ -59,5 +63,7 @@ func (b *StdinInputBuilder) Kind() string {
 }
 
 func (b *StdinInputBuilder) Build(name string, codec core.Codec, spec config.Value) core.Input {
-	return &StdinInput{}
+	var inputSpec StdinInputSpec
+	spec.Parse(&inputSpec)
+	return &StdinInput{name: name, codec: codec, spec: inputSpec}
 }

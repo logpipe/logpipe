@@ -60,10 +60,12 @@ func (p *Pipe) Start() {
 	for _, node := range p.inputs {
 		if node.input != nil {
 			err := node.input.Start(func(event core.Event) {
-				if node.action != nil && len(node.action) > 0 {
-					node.action.Exec(&event)
+				if !event.IsEmpty() {
+					if node.action != nil && len(node.action) > 0 {
+						node.action.Exec(&event)
+					}
+					p.consumer(event)
 				}
-				p.consumer(event)
 			})
 			if err != nil {
 				log.Println(err)

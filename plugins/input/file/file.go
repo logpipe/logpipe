@@ -32,7 +32,7 @@ func (i *FileInput) Start(consumer func(event core.Event)) error {
 				if i.Codec != nil {
 					source, e = i.Codec.Decode(source)
 				}
-				event := core.NewEvent("file", "localhost", source)
+				event := core.NewEvent(source)
 				consumer(event)
 			}
 		}
