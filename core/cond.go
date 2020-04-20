@@ -94,9 +94,9 @@ func (h *HasFieldCondBuilder) Build(spec config.Value) Cond {
 }
 
 type MatchFieldCond struct {
-	field  string
-	op     string
-	values []interface{}
+	field string
+	op    string
+	value interface{}
 }
 
 func (c *MatchFieldCond) Test(event Event) bool {
@@ -104,22 +104,22 @@ func (c *MatchFieldCond) Test(event Event) bool {
 	if value, isStr := v.(string); isStr {
 		switch c.op {
 		case "=":
-			target, ok := c.values[0].(string)
+			target, ok := c.value.(string)
 			return ok && value == target
 		case "!":
-			target, ok := c.values[0].(string)
+			target, ok := c.value.(string)
 			return ok && value != target
 		case "^":
-			target, ok := c.values[0].(string)
+			target, ok := c.value.(string)
 			return ok && strings.HasPrefix(value, target)
 		case "$":
-			target, ok := c.values[0].(string)
+			target, ok := c.value.(string)
 			return ok && strings.HasSuffix(value, target)
 		case "@":
-			target, ok := c.values[0].(string)
+			target, ok := c.value.(string)
 			return ok && strings.Contains(value, target)
 		case "#":
-			target, ok := c.values[0].(int)
+			target, ok := c.value.(int)
 			return ok && len(value) == target
 		default:
 			return false
@@ -139,7 +139,7 @@ func (*MatchFieldCondBuilder) Kind() string {
 func (*MatchFieldCondBuilder) Build(spec config.Value) Cond {
 	field := spec.GetString("field")
 	op := spec.GetString("op")
-	var values []interface{}
-	_ = spec.Get("value").Parse(values)
-	return &MatchFieldCond{field: field, op: op, values: values}
+	var value interface{}
+	_ = spec.Get("value").Parse(&value)
+	return &MatchFieldCond{field: field, op: op, value: value}
 }

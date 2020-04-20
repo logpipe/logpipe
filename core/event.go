@@ -53,6 +53,9 @@ func (e *Event) IsEmpty() bool {
 }
 
 func (e *Event) HasTag(tag string) bool {
+	if tag == "" {
+		return true
+	}
 	for _, t := range e.tags {
 		if t == tag {
 			return true
@@ -85,6 +88,9 @@ func (e *Event) SortTag(asc bool) {
 }
 
 func (e *Event) HasField(field string) bool {
+	if field == "" {
+		return true
+	}
 	_, ok := e.fields[field]
 	return ok
 }
