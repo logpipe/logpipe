@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/tk103331/logpipe/config"
-	"github.com/tk103331/logpipe/core"
-	_ "github.com/tk103331/logpipe/plugin"
+	"github.com/tk103331/logpipe/engine"
+	_ "github.com/tk103331/logpipe/plugins"
 	"log"
 )
 
@@ -13,12 +13,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := core.Init(); err != nil {
+	if err := engine.Init(); err != nil {
 		log.Fatal(err)
 	}
-	if err := core.Start(); err != nil {
+	if err := engine.Start(); err != nil {
 		log.Fatal(err)
 	}
 
-	core.Wait()
+	engine.Wait()
 }

@@ -1,6 +1,77 @@
 package plugin
 
-import _ "github.com/tk103331/logpipe/plugin/input"
-import _ "github.com/tk103331/logpipe/plugin/filter"
-import _ "github.com/tk103331/logpipe/plugin/output"
-import _ "github.com/tk103331/logpipe/plugin/codec"
+import (
+	"github.com/tk103331/logpipe/config"
+	"github.com/tk103331/logpipe/core"
+)
+
+var (
+	inputBuilders  = make(map[string]InputBuilder)
+	filterBuilders = make(map[string]FilterBuilder)
+	outputBuilders = make(map[string]OutputBuilder)
+	codecBuilders  = make(map[string]CodecBuilder)
+)
+
+type InputBuilder interface {
+	Kind() string
+	Build(name string, codec core.Codec, spec config.Value) core.Input
+}
+
+type FilterBuilder interface {
+	Kind() string
+	Build(name string, spec config.Value) core.Filter
+}
+type OutputBuilder interface {
+	Kind() string
+	Build(name string, codec core.Codec, spec config.Value) core.Output
+}
+type CodecBuilder interface {
+	Kind() string
+	Build(spec config.Value) core.Codec
+}
+
+func RegInput(builder InputBuilder) {
+	inputBuilders[builder.Kind()] = builder
+}
+
+func BuildInput(conf config.InputConf) core.Input {
+	if builder, ok := inputBuilders[conf.Kind()]; ok {
+		codec := BuildCodec(conf.Codec())
+		return builder.Build(conf.Name(), codec, conf.Spec())
+	}
+	return nil
+}
+
+func RegFilter(builder FilterBuilder) {
+	filterBuilders[builder.Kind()] = builder
+}
+
+func BuildFilter(conf config.FilterConf) core.Filter {
+	if builder, ok := filterBuilders[conf.Kind()]; ok {
+		return builder.Build(conf.Name(), conf.Spec())
+	}
+	return nil
+}
+
+func RegOutput(builder OutputBuilder) {
+	outputBuilders[builder.Kind()] = builder
+}
+
+func BuildOutput(conf config.OutputConf) core.Output {
+	if builder, ok := outputBuilders[conf.Kind()]; ok {
+		codec := BuildCodec(conf.Codec())
+		return builder.Build(conf.Name(), codec, conf.Spec())
+	}
+	return nil
+}
+
+func RegCodec(builder CodecBuilder) {
+	codecBuilders[builder.Kind()] = builder
+}
+
+func BuildCodec(conf config.CodecConf) core.Codec {
+	if builder, ok := codecBuilders[conf.Kind()]; ok {
+		return builder.Build(conf.Spec())
+	}
+	return nil
+}

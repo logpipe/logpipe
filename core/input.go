@@ -1,7 +1,7 @@
 package core
 
 type Input interface {
-	Start(ctx Context) error
+	Start(consumer func(event Event)) error
 	Stop() error
 }
 
@@ -11,7 +11,7 @@ type BaseInput struct {
 	Codec Decoder
 }
 
-func (*BaseInput) Start(ctx Context) error {
+func (*BaseInput) Start(_ func(event Event)) error {
 	return nil
 }
 func (*BaseInput) Stop() error {
