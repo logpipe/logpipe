@@ -1,4 +1,5 @@
 name: default-pipe
+async: true
 inputs:
   - name: stdin-input
     kind: stdin

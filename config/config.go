@@ -1,7 +1,6 @@
 package config
 
 import (
-	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"log"
 	"os"
@@ -49,8 +48,11 @@ func loadAppConf() error {
 		return err
 	}
 	defer confFile.Close()
-	decoder := yaml.NewDecoder(confFile)
-	err = decoder.Decode(&appConf)
+	value, err := NewValue(confFile)
+	if err != nil {
+		return err
+	}
+	err = value.Parse(&appConf)
 	if err != nil {
 		return err
 	}
@@ -88,14 +90,12 @@ func readPipeConf(path string) error {
 		return err
 	}
 	defer file.Close()
-	decoder := yaml.NewDecoder(file)
-	var node yaml.Node
-	decoder.Decode(&node)
-	if node.Kind == yaml.DocumentNode {
-		node = *node.Content[0]
+	value, err := NewValue(file)
+	if err != nil {
+		return err
 	}
 	conf := PipeConf{}
-	node.Decode(&conf)
+	err = value.Parse(&conf)
 	if err != nil {
 		return err
 	}

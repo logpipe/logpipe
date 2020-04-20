@@ -2,10 +2,21 @@ package config
 
 import (
 	"gopkg.in/yaml.v3"
+	"io"
 )
 
 type Value struct {
 	node *yaml.Node
+}
+
+func NewValue(reader io.Reader) (*Value, error) {
+	var node yaml.Node
+	decoder := yaml.NewDecoder(reader)
+	err := decoder.Decode(&node)
+	if node.Kind == yaml.DocumentNode {
+		node = *node.Content[0]
+	}
+	return &Value{node: &node}, err
 }
 
 func (v *Value) UnmarshalYAML(value *yaml.Node) error {
@@ -77,9 +88,13 @@ func (v *Value) GetBool(key string) bool {
 	return val
 }
 
-func (v Value) Parse(target interface{}) error {
+func (v *Value) Parse(target interface{}) error {
 	if v.node != nil {
-		return v.node.Decode(target)
+		if loader, ok := target.(ConfLoader); ok {
+			return loader.Load(v)
+		} else {
+			return v.node.Decode(target)
+		}
 	}
 	return nil
 }

@@ -18,17 +18,26 @@ type Pipe struct {
 
 func (p *Pipe) Init(pipeConf config.PipeConf) {
 	p.conf = pipeConf
-	p.inputs = make([]core.Input, len(pipeConf.Inputs))
-	for i, conf := range pipeConf.Inputs {
+	p.inputs = make([]core.Input, len(pipeConf.Inputs()))
+	for i, conf := range pipeConf.Inputs() {
 		p.inputs[i] = plugin.BuildInput(conf)
 	}
-	p.filters = make([]core.Filter, len(pipeConf.Filters))
-	for i, conf := range pipeConf.Filters {
+	p.filters = make([]core.Filter, len(pipeConf.Filters()))
+	for i, conf := range pipeConf.Filters() {
 		p.filters[i] = plugin.BuildFilter(conf)
 	}
-	p.outputs = make([]core.Output, len(pipeConf.Outputs))
-	for i, conf := range pipeConf.Outputs {
+	p.outputs = make([]core.Output, len(pipeConf.Outputs()))
+	for i, conf := range pipeConf.Outputs() {
 		p.outputs[i] = plugin.BuildOutput(conf)
+	}
+	if p.conf.Async() {
+		p.consumer = func(event core.Event) {
+			go p.input(event)
+		}
+	} else {
+		p.consumer = func(event core.Event) {
+			p.input(event)
+		}
 	}
 }
 
