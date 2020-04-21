@@ -33,6 +33,9 @@ func (v *Value) IsArray() bool {
 func (v *Value) IsScalar() bool {
 	return v.node.Kind == yaml.ScalarNode
 }
+func (v *Value) IsEmpty() bool {
+	return v.node == nil
+}
 
 func (v *Value) Get(key string) *Value {
 	if key == "" {

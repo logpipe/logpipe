@@ -1,12 +1,10 @@
-name: default-pipe
+name: example-fileio
 async: true
 inputs:
-  - name: stdin-input
-    kind: stdin
+  - name: file-input
+    kind: file
     codec:
       kind: json
-      spec:
-        test: vvv
     action:
       - kind: add_tag
         spec:
@@ -16,31 +14,31 @@ inputs:
           field: xxx
           value: aaa
     spec:
+      path: ./data/json.data
       value1: true
       value2: asdf
       value3: 222
 filters:
 
 outputs:
-  - name: stdout-output
-    kind: stdout
+  - name: file-output
+    kind: file
     cond:
       - kind: has_tag
         spec:
           tag: xxx
       - kind: has_field
         spec:
-          tag: xxx
+          field: xxx
       - kind: match_field
         spec:
           field: xxx
-          op: =
+          op: equal
           value: aaa
     codec:
       kind: json
-      spec:
-        test: vvv
     spec:
+      path: ./data/json-output.data
       value1: true
       value2: asdf
       value3: 222

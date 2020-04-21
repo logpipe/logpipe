@@ -1,0 +1,47 @@
+name: example-stdio
+async: true
+inputs:
+  - name: stdin-input
+    kind: stdin
+    codec:
+      kind: json
+      spec:
+        test: vvv
+    action:
+      - kind: add_tag
+        spec:
+          tag: xxx
+      - kind: add_field
+        spec:
+          field: xxx
+          value: aaa
+    spec:
+      value1: true
+      value2: asdf
+      value3: 222
+filters:
+
+outputs:
+  - name: stdout-output
+    kind: stdout
+    cond:
+      - kind: has_tag
+        spec:
+          tag: xxx
+      - kind: has_field
+        spec:
+          field: xxx
+      - kind: match_field
+        spec:
+          field: xxx
+          op: equal
+          value: aaa
+    codec:
+      kind: json
+      spec:
+        test: vvv
+    spec:
+      value1: true
+      value2: asdf
+      value3: 222
+

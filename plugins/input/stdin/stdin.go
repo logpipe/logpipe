@@ -19,11 +19,11 @@ type StdinInputSpec struct {
 }
 
 type StdinInput struct {
-	name    string
-	king    string
-	codec   core.Decoder
-	spec    StdinInputSpec
-	stopped bool
+	name  string
+	king  string
+	codec core.Decoder
+	spec  StdinInputSpec
+	stop  chan struct{}
 }
 
 func (s *StdinInput) Start(consumer func(event core.Event)) error {
@@ -32,13 +32,18 @@ func (s *StdinInput) Start(consumer func(event core.Event)) error {
 }
 
 func (s *StdinInput) Stop() error {
-	s.stopped = true
+	s.stop <- struct{}{}
 	return nil
 }
 
 func (s *StdinInput) run(consumer func(event core.Event)) {
 	reader := bufio.NewReader(os.Stdin)
-	for !s.stopped {
+	for {
+		select {
+		case <-s.stop:
+			break
+		default:
+		}
 		bytes, _, _ := reader.ReadLine()
 		str := string(bytes)
 		if s.codec != nil {

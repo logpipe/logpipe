@@ -10,7 +10,7 @@ import (
 )
 
 var pipes = make(map[string]*Pipe)
-var done = make(chan int)
+var done = make(chan struct{})
 
 func Init() error {
 	pipeConf := config.GetAppConf().Pipes
@@ -27,13 +27,13 @@ func Start() error {
 	wg.Add(len(pipes))
 	for name, pipe := range pipes {
 		go func(name string, p *Pipe) {
-			log.Println("starting pipe: " + name)
+			log.Println("starting example: " + name)
 			p.Start()
 			wg.Done()
 		}(name, pipe)
 	}
 	wg.Wait()
-	monitor()
+	go monitor()
 	return nil
 }
 func Stop() {
@@ -41,13 +41,13 @@ func Stop() {
 	wg.Add(len(pipes))
 	for name, pipe := range pipes {
 		go func(name string, p *Pipe) {
-			log.Println("stopping pipe: " + name)
+			log.Println("stopping example: " + name)
 			p.Stop()
 			wg.Done()
 		}(name, pipe)
 	}
 	wg.Wait()
-	done <- 0
+	done <- struct{}{}
 }
 
 func Wait() {

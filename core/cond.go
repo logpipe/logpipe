@@ -103,22 +103,28 @@ func (c *MatchFieldCond) Test(event Event) bool {
 	v := event.GetField(c.field)
 	if value, isStr := v.(string); isStr {
 		switch c.op {
-		case "=":
+		case "equal":
 			target, ok := c.value.(string)
 			return ok && value == target
-		case "!":
+		case "not_equal":
 			target, ok := c.value.(string)
 			return ok && value != target
-		case "^":
+		case "start_with":
 			target, ok := c.value.(string)
 			return ok && strings.HasPrefix(value, target)
-		case "$":
+		case "end_with":
 			target, ok := c.value.(string)
 			return ok && strings.HasSuffix(value, target)
-		case "@":
+		case "contains":
 			target, ok := c.value.(string)
 			return ok && strings.Contains(value, target)
-		case "#":
+		case "length":
+			target, ok := c.value.(int)
+			return ok && len(value) == target
+		case "lower_than":
+			target, ok := c.value.(int)
+			return ok && len(value) == target
+		case "greater_than":
 			target, ok := c.value.(int)
 			return ok && len(value) == target
 		default:

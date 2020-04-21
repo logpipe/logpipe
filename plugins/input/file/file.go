@@ -1,6 +1,7 @@
 package file
 
 import (
+	"bufio"
 	"github.com/tk103331/logpipe/config"
 	"github.com/tk103331/logpipe/core"
 	"github.com/tk103331/logpipe/plugin"
@@ -13,27 +14,39 @@ func init() {
 
 type FileInput struct {
 	core.BaseInput
-	Path string
-	file *os.File
+	codec core.Codec
+	path  string
+	delim byte
+	file  *os.File
+	stop  chan struct{}
 }
 
 func (i *FileInput) Start(consumer func(event core.Event)) error {
-	file, err := os.OpenFile(i.Path, os.O_RDONLY, os.ModeAppend)
+	file, err := os.OpenFile(i.path, os.O_RDONLY, os.ModeAppend)
 	if err != nil {
 		return err
 	}
 	i.file = file
 	go func() {
+		reader := bufio.NewReader(i.file)
 		for {
-			data := make([]byte, 1024)
-			n, e := i.file.Read(data)
+			select {
+			case <-i.stop:
+				break
+			default:
+			}
+			line, e := reader.ReadString(i.delim)
 			if e == nil {
-				var source interface{} = string(data[0:n])
-				if i.Codec != nil {
-					source, e = i.Codec.Decode(source)
+				var source interface{} = line
+				if i.codec != nil {
+					event, e := i.codec.Decode(source)
+					if e == nil {
+						consumer(event)
+					}
+				} else {
+					event := core.NewEvent(source)
+					consumer(event)
 				}
-				event := core.NewEvent(source)
-				consumer(event)
 			}
 		}
 	}()
@@ -41,6 +54,7 @@ func (i *FileInput) Start(consumer func(event core.Event)) error {
 }
 
 func (i *FileInput) Stop() error {
+	i.stop <- struct{}{}
 	err := i.file.Close()
 	return err
 }
@@ -53,5 +67,11 @@ func (b *FileInputBuilder) Kind() string {
 }
 
 func (b *FileInputBuilder) Build(name string, codec core.Codec, spec config.Value) core.Input {
-	return &FileInput{}
+	path := spec.GetString("path")
+	delimValue := spec.Get("delim")
+	var delim byte = '\n'
+	if !delimValue.IsEmpty() {
+		delim = byte(delimValue.Int())
+	}
+	return &FileInput{path: path, delim: delim, codec: codec}
 }

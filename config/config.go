@@ -73,7 +73,7 @@ func loadPipeConf() error {
 		name := fi.Name()
 		if !fi.IsDir() && (strings.HasSuffix(name, ".yaml")) {
 			absPath := filepath.Join(path, name)
-			log.Printf("loading pipe conf: " + absPath)
+			log.Printf("loading example conf: " + absPath)
 
 			err := readPipeConf(absPath)
 			if err != nil {
