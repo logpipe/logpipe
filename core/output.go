@@ -7,10 +7,7 @@ type Output interface {
 }
 
 type BaseOutput struct {
-	Name  string
-	Kind  string
-	Cond  []*Cond
-	Codec Encoder
+	codec Codec
 }
 
 func (*BaseOutput) Start() error {
@@ -23,4 +20,12 @@ func (*BaseOutput) Stop() error {
 
 func (*BaseOutput) Output(_ Event) error {
 	return nil
+}
+
+func (i *BaseOutput) SetCodec(codec Codec) {
+	i.codec = codec
+}
+
+func (i *BaseOutput) Codec() Codec {
+	return i.codec
 }

@@ -19,11 +19,11 @@ type StdinInputSpec struct {
 }
 
 type StdinInput struct {
-	name  string
-	king  string
-	codec core.Decoder
-	spec  StdinInputSpec
-	stop  chan struct{}
+	core.BaseInput
+	name string
+	king string
+	spec StdinInputSpec
+	stop chan struct{}
 }
 
 func (s *StdinInput) Start(consumer func(event core.Event)) error {
@@ -46,8 +46,8 @@ func (s *StdinInput) run(consumer func(event core.Event)) {
 		}
 		bytes, _, _ := reader.ReadLine()
 		str := string(bytes)
-		if s.codec != nil {
-			event, err := s.codec.Decode(str)
+		if s.Codec() != nil {
+			event, err := s.Codec().Decode(str)
 			if err != nil {
 				consumer(core.NewEmptyEvent())
 			} else {
@@ -67,8 +67,8 @@ func (b *StdinInputBuilder) Kind() string {
 	return "stdin"
 }
 
-func (b *StdinInputBuilder) Build(name string, codec core.Codec, spec config.Value) core.Input {
+func (b *StdinInputBuilder) Build(name string, spec config.Value) core.Input {
 	var inputSpec StdinInputSpec
 	spec.Parse(&inputSpec)
-	return &StdinInput{name: name, codec: codec, spec: inputSpec}
+	return &StdinInput{name: name, spec: inputSpec}
 }

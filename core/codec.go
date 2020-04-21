@@ -12,3 +12,8 @@ type Encoder interface {
 type Decoder interface {
 	Decode(data interface{}) (Event, error)
 }
+
+type CodecContainer interface {
+	SetCodec(codec Codec)
+	Codec() Codec
+}

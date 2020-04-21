@@ -6,9 +6,7 @@ type Input interface {
 }
 
 type BaseInput struct {
-	Name  string
-	Kind  string
-	Codec Decoder
+	codec Codec
 }
 
 func (*BaseInput) Start(_ func(event Event)) error {
@@ -16,4 +14,12 @@ func (*BaseInput) Start(_ func(event Event)) error {
 }
 func (*BaseInput) Stop() error {
 	return nil
+}
+
+func (i *BaseInput) SetCodec(codec Codec) {
+	i.codec = codec
+}
+
+func (i *BaseInput) Codec() Codec {
+	return i.codec
 }

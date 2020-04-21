@@ -5,9 +5,6 @@ type Filter interface {
 }
 
 type BaseFilter struct {
-	Name string
-	Kind string
-	Cond []*Cond
 }
 
 func (f *BaseFilter) Filter(event Event) Event {

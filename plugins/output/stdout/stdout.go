@@ -13,14 +13,13 @@ func init() {
 
 type StdoutOutput struct {
 	core.BaseOutput
-	name  string
-	codec core.Codec
-	spec  StdoutOutputSpec
+	name string
+	spec StdoutOutputSpec
 }
 
 func (s *StdoutOutput) Output(event core.Event) error {
-	if s.codec != nil {
-		data, _ := s.codec.Encode(event)
+	if s.Codec() != nil {
+		data, _ := s.Codec().Encode(event)
 		fmt.Println(data)
 	} else {
 		fmt.Println(event)
@@ -38,8 +37,8 @@ func (b *StdoutOutputBuilder) Kind() string {
 	return "stdout"
 }
 
-func (b *StdoutOutputBuilder) Build(name string, codec core.Codec, spec config.Value) core.Output {
+func (b *StdoutOutputBuilder) Build(name string, spec config.Value) core.Output {
 	var outputSpec StdoutOutputSpec
 	spec.Parse(&outputSpec)
-	return &StdoutOutput{name: name, codec: codec, spec: outputSpec}
+	return &StdoutOutput{name: name, spec: outputSpec}
 }

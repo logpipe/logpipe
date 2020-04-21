@@ -16,7 +16,6 @@ type FileOutput struct {
 	core.BaseOutput
 	path  string
 	delim byte
-	codec core.Codec
 	file  *os.File
 }
 
@@ -46,8 +45,8 @@ func (o *FileOutput) Stop() error {
 func (o *FileOutput) Output(event core.Event) error {
 	var err error
 	data := event.Source()
-	if o.codec != nil {
-		data, err = o.codec.Encode(event)
+	if o.Codec() != nil {
+		data, err = o.Codec().Encode(event)
 		if err != nil {
 			return err
 		}
@@ -67,12 +66,12 @@ func (f *FileOutputBuilder) Kind() string {
 	return "file"
 }
 
-func (f *FileOutputBuilder) Build(name string, codec core.Codec, spec config.Value) core.Output {
+func (f *FileOutputBuilder) Build(name string, spec config.Value) core.Output {
 	path := spec.GetString("path")
 	delimValue := spec.Get("delim")
 	var delim byte = '\n'
 	if !delimValue.IsEmpty() {
 		delim = byte(delimValue.Int())
 	}
-	return &FileOutput{path: path, delim: delim, codec: codec}
+	return &FileOutput{path: path, delim: delim}
 }

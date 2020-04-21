@@ -14,7 +14,7 @@ var (
 
 type InputBuilder interface {
 	Kind() string
-	Build(name string, codec core.Codec, spec config.Value) core.Input
+	Build(name string, spec config.Value) core.Input
 }
 
 type FilterBuilder interface {
@@ -23,7 +23,7 @@ type FilterBuilder interface {
 }
 type OutputBuilder interface {
 	Kind() string
-	Build(name string, codec core.Codec, spec config.Value) core.Output
+	Build(name string, spec config.Value) core.Output
 }
 type CodecBuilder interface {
 	Kind() string
@@ -37,7 +37,10 @@ func RegInput(builder InputBuilder) {
 func BuildInput(conf config.InputConf) core.Input {
 	if builder, ok := inputBuilders[conf.Kind()]; ok {
 		codec := BuildCodec(conf.Codec())
-		return builder.Build(conf.Name(), codec, conf.Spec())
+		input := builder.Build(conf.Name(), conf.Spec())
+		if container, ok := input.(core.CodecContainer); ok {
+			container.SetCodec(codec)
+		}
 	}
 	return nil
 }
@@ -60,7 +63,10 @@ func RegOutput(builder OutputBuilder) {
 func BuildOutput(conf config.OutputConf) core.Output {
 	if builder, ok := outputBuilders[conf.Kind()]; ok {
 		codec := BuildCodec(conf.Codec())
-		return builder.Build(conf.Name(), codec, conf.Spec())
+		output := builder.Build(conf.Name(), conf.Spec())
+		if container, ok := output.(core.CodecContainer); ok {
+			container.SetCodec(codec)
+		}
 	}
 	return nil
 }
