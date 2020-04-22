@@ -20,18 +20,19 @@ type StdinInputSpec struct {
 
 type StdinInput struct {
 	core.BaseInput
-	name string
-	king string
+	ctx  *core.Context
 	spec StdinInputSpec
 	stop chan struct{}
 }
 
 func (s *StdinInput) Start(consumer func(event core.Event)) error {
+	s.ctx.Info("starting...")
 	go s.run(consumer)
 	return nil
 }
 
 func (s *StdinInput) Stop() error {
+	s.ctx.Info("stopping...")
 	s.stop <- struct{}{}
 	return nil
 }
@@ -67,8 +68,8 @@ func (b *StdinInputBuilder) Kind() string {
 	return "stdin"
 }
 
-func (b *StdinInputBuilder) Build(name string, spec config.Value) core.Input {
+func (b *StdinInputBuilder) Build(name string, ctx *core.Context, spec config.Value) core.Input {
 	var inputSpec StdinInputSpec
 	spec.Parse(&inputSpec)
-	return &StdinInput{name: name, spec: inputSpec}
+	return &StdinInput{ctx: ctx, spec: inputSpec}
 }

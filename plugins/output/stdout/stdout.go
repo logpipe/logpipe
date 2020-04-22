@@ -13,7 +13,7 @@ func init() {
 
 type StdoutOutput struct {
 	core.BaseOutput
-	name string
+	ctx  *core.Context
 	spec StdoutOutputSpec
 }
 
@@ -37,8 +37,8 @@ func (b *StdoutOutputBuilder) Kind() string {
 	return "stdout"
 }
 
-func (b *StdoutOutputBuilder) Build(name string, spec config.Value) core.Output {
+func (b *StdoutOutputBuilder) Build(name string, ctx *core.Context, spec config.Value) core.Output {
 	var outputSpec StdoutOutputSpec
 	spec.Parse(&outputSpec)
-	return &StdoutOutput{name: name, spec: outputSpec}
+	return &StdoutOutput{ctx: ctx, spec: outputSpec}
 }

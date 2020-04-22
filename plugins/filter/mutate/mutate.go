@@ -56,6 +56,6 @@ func (b *MutateFilterBuilder) Kind() string {
 	return "mutate"
 }
 
-func (b *MutateFilterBuilder) Build(name string, spec config.Value) core.Filter {
+func (b *MutateFilterBuilder) Build(name string, ctx *core.Context, spec config.Value) core.Filter {
 	return &MutateFilter{}
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/tk103331/logpipe/core"
 	"github.com/tk103331/logpipe/plugin"
 	"log"
+	"os"
 )
 
 type Pipe struct {
@@ -18,22 +19,26 @@ type Pipe struct {
 
 func (p *Pipe) Init(pipeConf config.PipeConf) {
 	p.conf = pipeConf
+	logger := log.New(os.Stdout, "", 0)
 	p.inputs = make([]InputNode, len(pipeConf.Inputs()))
 	for i, conf := range pipeConf.Inputs() {
-		input := plugin.BuildInput(conf)
+		ctx := core.NewContext(p.name, conf.Name(), conf.Kind(), logger)
+		input := plugin.BuildInput(ctx, conf)
 		actions := core.BuildActions(conf.Action())
 		p.inputs[i] = InputNode{input: input, action: actions}
 	}
 	p.filters = make([]FilterNode, len(pipeConf.Filters()))
 	for i, conf := range pipeConf.Filters() {
-		filter := plugin.BuildFilter(conf)
+		ctx := core.NewContext(p.name, conf.Name(), conf.Kind(), logger)
+		filter := plugin.BuildFilter(ctx, conf)
 		cond := core.BuildConds(conf.Cond())
 		actions := core.BuildActions(conf.Action())
 		p.filters[i] = FilterNode{filter: filter, cond: cond, action: actions}
 	}
 	p.outputs = make([]OutputNode, len(pipeConf.Outputs()))
 	for i, conf := range pipeConf.Outputs() {
-		output := plugin.BuildOutput(conf)
+		ctx := core.NewContext(p.name, conf.Name(), conf.Kind(), logger)
+		output := plugin.BuildOutput(ctx, conf)
 		cond := core.BuildConds(conf.Cond())
 		p.outputs[i] = OutputNode{output: output, cond: cond}
 	}
