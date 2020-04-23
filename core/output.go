@@ -8,6 +8,7 @@ type Output interface {
 
 type BaseOutput struct {
 	codec Codec
+	ctx   *Context
 }
 
 func (*BaseOutput) Start() error {
@@ -28,4 +29,12 @@ func (i *BaseOutput) SetCodec(codec Codec) {
 
 func (i *BaseOutput) Codec() Codec {
 	return i.codec
+}
+
+func (i *BaseOutput) Context() *Context {
+	return i.ctx
+}
+
+func (i *BaseOutput) SetContext(ctx *Context) {
+	i.ctx = ctx
 }

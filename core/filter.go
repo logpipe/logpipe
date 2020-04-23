@@ -5,8 +5,17 @@ type Filter interface {
 }
 
 type BaseFilter struct {
+	ctx *Context
 }
 
 func (f *BaseFilter) Filter(event Event) Event {
 	return event
+}
+
+func (i *BaseFilter) Context() *Context {
+	return i.ctx
+}
+
+func (i *BaseFilter) SetContext(ctx *Context) {
+	i.ctx = ctx
 }

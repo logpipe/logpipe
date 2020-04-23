@@ -66,7 +66,7 @@ func (f *FileOutputBuilder) Kind() string {
 	return "file"
 }
 
-func (f *FileOutputBuilder) Build(name string, ctx *core.Context, spec config.Value) core.Output {
+func (f *FileOutputBuilder) Build(name string, spec config.Value) core.Output {
 	path := spec.GetString("path")
 	delimValue := spec.Get("delim")
 	var delim byte = '\n'

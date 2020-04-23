@@ -6,6 +6,11 @@ import (
 	"time"
 )
 
+type ContextContainer interface {
+	Context() *Context
+	SetContext(ctx *Context)
+}
+
 type Context struct {
 	pipe   string
 	name   string

@@ -23,14 +23,20 @@ func (p *Pipe) Init(pipeConf config.PipeConf) {
 	p.inputs = make([]InputNode, len(pipeConf.Inputs()))
 	for i, conf := range pipeConf.Inputs() {
 		ctx := core.NewContext(p.name, conf.Name(), conf.Kind(), logger)
-		input := plugin.BuildInput(ctx, conf)
+		input := plugin.BuildInput(conf)
+		if container, ok := input.(core.ContextContainer); ok {
+			container.SetContext(ctx)
+		}
 		actions := core.BuildActions(conf.Action())
 		p.inputs[i] = InputNode{input: input, action: actions}
 	}
 	p.filters = make([]FilterNode, len(pipeConf.Filters()))
 	for i, conf := range pipeConf.Filters() {
 		ctx := core.NewContext(p.name, conf.Name(), conf.Kind(), logger)
-		filter := plugin.BuildFilter(ctx, conf)
+		filter := plugin.BuildFilter(conf)
+		if container, ok := filter.(core.ContextContainer); ok {
+			container.SetContext(ctx)
+		}
 		cond := core.BuildConds(conf.Cond())
 		actions := core.BuildActions(conf.Action())
 		p.filters[i] = FilterNode{filter: filter, cond: cond, action: actions}
@@ -38,7 +44,10 @@ func (p *Pipe) Init(pipeConf config.PipeConf) {
 	p.outputs = make([]OutputNode, len(pipeConf.Outputs()))
 	for i, conf := range pipeConf.Outputs() {
 		ctx := core.NewContext(p.name, conf.Name(), conf.Kind(), logger)
-		output := plugin.BuildOutput(ctx, conf)
+		output := plugin.BuildOutput(conf)
+		if container, ok := output.(core.ContextContainer); ok {
+			container.SetContext(ctx)
+		}
 		cond := core.BuildConds(conf.Cond())
 		p.outputs[i] = OutputNode{output: output, cond: cond}
 	}
