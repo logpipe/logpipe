@@ -1,1 +1,4 @@
-path: ./example/
+path: example/
+log:
+  level: DEBUG
+  path: logs

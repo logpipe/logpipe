@@ -5,7 +5,6 @@ import (
 	"github.com/tk103331/logpipe/core"
 	"github.com/tk103331/logpipe/plugin"
 	"log"
-	"os"
 )
 
 type Pipe struct {
@@ -19,7 +18,7 @@ type Pipe struct {
 
 func (p *Pipe) Init(pipeConf config.PipeConf) {
 	p.conf = pipeConf
-	logger := log.New(os.Stdout, "", 0)
+	logger := core.NewLogger(pipeConf.Log().Path, pipeConf.Log().Level)
 	p.inputs = make([]InputNode, len(pipeConf.Inputs()))
 	for i, conf := range pipeConf.Inputs() {
 		ctx := core.NewContext(p.name, conf.Name(), conf.Kind(), logger)

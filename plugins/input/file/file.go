@@ -14,7 +14,6 @@ func init() {
 
 type FileInput struct {
 	core.BaseInput
-	ctx   core.Context
 	path  string
 	delim byte
 	file  *os.File
@@ -23,6 +22,7 @@ type FileInput struct {
 
 func (i *FileInput) Start(consumer func(event core.Event)) error {
 	file, err := os.OpenFile(i.path, os.O_RDONLY, os.ModeAppend)
+
 	if err != nil {
 		return err
 	}

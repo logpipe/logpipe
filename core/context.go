@@ -2,8 +2,6 @@ package core
 
 import (
 	"fmt"
-	"log"
-	"time"
 )
 
 type ContextContainer interface {
@@ -16,29 +14,26 @@ type Context struct {
 	name   string
 	kind   string
 	plugin string
-	logger *log.Logger
+	logger *Logger
 }
 
-func NewContext(pipe string, name string, kind string, logger *log.Logger) *Context {
-	plugin := fmt.Sprintf("[%s-%s-%s]", pipe, kind, name)
+func NewContext(pipe string, name string, kind string, logger *Logger) *Context {
+	plugin := fmt.Sprintf(" [%s-%s-%s] ", pipe, kind, name)
 	return &Context{pipe: pipe, name: name, kind: kind, plugin: plugin, logger: logger}
 }
 
-func (c *Context) log(level string, format string, values ...interface{}) {
-	timestamp := time.Now().String()
-	prefix := fmt.Sprintf("[%s] [%s] [%s] ", timestamp, level, c.plugin)
-	message := fmt.Sprintf(format, values)
-	c.logger.Println(prefix + message)
+func (c *Context) Debug(format string, values ...interface{}) {
+	c.logger.Debug(c.plugin+format, values...)
 }
 
 func (c *Context) Info(format string, values ...interface{}) {
-	c.log("[INFO]", format, values)
+	c.logger.Info(c.plugin+format, values...)
 }
 
 func (c *Context) Warn(format string, values ...interface{}) {
-	c.log("[WARN]", format, values)
+	c.logger.Warn(c.plugin+format, values...)
 }
 
 func (c *Context) Error(format string, values ...interface{}) {
-	c.log("[ERROR]", format, values)
+	c.logger.Error(c.plugin+format, values...)
 }

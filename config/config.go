@@ -17,6 +17,7 @@ func init() {
 type AppConf struct {
 	Path  string
 	Pipes map[string]PipeConf
+	Log   LogConf
 }
 
 func LoadConf() error {
@@ -59,6 +60,16 @@ func loadAppConf() error {
 	if !filepath.IsAbs(appConf.Path) {
 		appConf.Path = filepath.Join(filepath.Dir(appConfPath), appConf.Path)
 	}
+	if appConf.Log.Level == "" {
+		appConf.Log.Level = DEFAULT_LOG_LEVEL
+	}
+	if appConf.Log.Path == "" {
+		appConf.Log.Path = DEFAULT_LOG_PATH
+	}
+	if !filepath.IsAbs(appConf.Log.Path) {
+		appConf.Log.Path, err = filepath.Abs(appConf.Log.Path)
+	}
+
 	return nil
 }
 

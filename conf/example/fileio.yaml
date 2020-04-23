@@ -1,5 +1,7 @@
 name: example-fileio
 async: true
+log:
+  level: INFO
 inputs:
   - name: file-input
     kind: file
