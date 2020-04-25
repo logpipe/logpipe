@@ -6,6 +6,7 @@ import (
 	"github.com/logpipe/logpipe/config"
 	"github.com/logpipe/logpipe/engine"
 	"github.com/logpipe/logpipe/log"
+	_ "github.com/logpipe/plugins"
 )
 
 func main() {
