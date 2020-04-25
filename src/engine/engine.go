@@ -9,13 +9,13 @@ import (
 	"syscall"
 )
 
-var pipes = make(map[string]*Pipe)
+var pipes = make(map[string]*pipe)
 var done = make(chan struct{})
 
 func Init() error {
 	pipeConf := config.GetAppConf().Pipes
 	for name, conf := range pipeConf {
-		pipe := &Pipe{}
+		pipe := &pipe{}
 		pipe.Init(conf)
 		pipes[name] = pipe
 	}
@@ -25,12 +25,12 @@ func Init() error {
 func Start() error {
 	wg := sync.WaitGroup{}
 	wg.Add(len(pipes))
-	for name, pipe := range pipes {
-		go func(name string, p *Pipe) {
-			log.Info("starting %s", name)
+	for name, p := range pipes {
+		go func(name string, p *pipe) {
+			log.Info("starting pipe [%s]", name)
 			p.Start()
 			wg.Done()
-		}(name, pipe)
+		}(name, p)
 	}
 	wg.Wait()
 	go monitor()
@@ -39,12 +39,12 @@ func Start() error {
 func Stop() {
 	wg := sync.WaitGroup{}
 	wg.Add(len(pipes))
-	for name, pipe := range pipes {
-		go func(name string, p *Pipe) {
-			log.Info("stopping %s", name)
+	for name, p := range pipes {
+		go func(name string, p *pipe) {
+			log.Info("stopping pipe [%s]", name)
 			p.Stop()
 			wg.Done()
-		}(name, pipe)
+		}(name, p)
 	}
 	wg.Wait()
 	done <- struct{}{}
@@ -56,10 +56,10 @@ func Wait() {
 
 func monitor() {
 	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
+	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
 	for {
 		sig := <-signals
-		if sig == syscall.SIGINT || sig == syscall.SIGTERM {
+		if sig == syscall.SIGINT || sig == syscall.SIGTERM || sig == syscall.SIGKILL {
 			Stop()
 		}
 	}

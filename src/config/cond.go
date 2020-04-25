@@ -18,7 +18,7 @@ func (c *CondConf) Spec() Value {
 }
 
 func (c *CondConf) UnmarshalYAML(node *yaml.Node) error {
-	value := Value{node}
+	value := Value{node: node}
 	c.kind = value.GetString("kind")
 	err := value.Get("spec").Parse(&c.spec)
 	if err != nil {

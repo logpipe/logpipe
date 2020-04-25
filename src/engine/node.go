@@ -4,18 +4,24 @@ import (
 	"github.com/logpipe/logpipe/core"
 )
 
-type InputNode struct {
+type inputNode struct {
+	name   string
+	ctx    *core.Context
 	input  core.Input
 	action core.Actions
 }
 
-type FilterNode struct {
+type filterNode struct {
+	name   string
+	ctx    *core.Context
 	cond   core.Conds
 	filter core.Filter
 	action core.Actions
 }
 
-type OutputNode struct {
+type outputNode struct {
+	name   string
+	ctx    *core.Context
 	cond   core.Conds
 	output core.Output
 }

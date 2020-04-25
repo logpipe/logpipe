@@ -16,7 +16,7 @@ func (c *ActionConf) Spec() Value {
 }
 
 func (c *ActionConf) UnmarshalYAML(node *yaml.Node) error {
-	value := Value{node}
+	value := Value{node: node}
 	c.kind = value.GetString("kind")
 	err := value.Get("spec").Parse(&c.spec)
 	if err != nil {

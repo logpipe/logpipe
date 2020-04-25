@@ -21,24 +21,24 @@ func NewLogger(path string, level string) *Logger {
 	})
 
 	core := zapcore.NewCore(zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()), writer, logLevel)
-	logger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
+	logger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(2))
 	return &Logger{logger: logger.Sugar(), logLevel: logLevel}
 }
 
 func (l *Logger) Debug(format string, values ...interface{}) {
-	l.logger.Debugf(format, values)
+	l.logger.Debugf(format, values...)
 }
 
 func (l *Logger) Info(format string, values ...interface{}) {
-	l.logger.Infof(format, values)
+	l.logger.Infof(format, values...)
 }
 
 func (l *Logger) Warn(format string, values ...interface{}) {
-	l.logger.Warnf(format, values)
+	l.logger.Warnf(format, values...)
 }
 
 func (l *Logger) Error(format string, values ...interface{}) {
-	l.logger.Errorf(format, values)
+	l.logger.Errorf(format, values...)
 }
 
 func (l *Logger) setLevel(level string) {

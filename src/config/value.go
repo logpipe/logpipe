@@ -1,15 +1,31 @@
 package config
 
 import (
+	"fmt"
 	"gopkg.in/yaml.v3"
 	"io"
+	"os"
 )
 
 type Value struct {
+	file string
 	node *yaml.Node
 }
 
-func NewValue(reader io.Reader) (*Value, error) {
+func readValue(path string) (*Value, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	value, err := newValue(file)
+	if value != nil {
+		value.file = path
+	}
+	return value, err
+}
+
+func newValue(reader io.Reader) (*Value, error) {
 	var node yaml.Node
 	decoder := yaml.NewDecoder(reader)
 	err := decoder.Decode(&node)
@@ -22,6 +38,10 @@ func NewValue(reader io.Reader) (*Value, error) {
 func (v *Value) UnmarshalYAML(value *yaml.Node) error {
 	v.node = value
 	return nil
+}
+
+func (v *Value) Location() string {
+	return fmt.Sprintf("file:%v@(%d:%d)", v.file, v.node.Line, v.node.Column)
 }
 
 func (v *Value) IsMap() bool {

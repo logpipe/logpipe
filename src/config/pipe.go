@@ -4,6 +4,7 @@ import "path/filepath"
 
 type PipeConf struct {
 	name    string
+	file    string
 	async   bool
 	log     LogConf
 	inputs  []InputConf

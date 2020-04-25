@@ -22,17 +22,17 @@ func InitAppLogger(path string, level string) {
 }
 
 func Debug(format string, values ...interface{}) {
-	appLogger.Debug(format, values)
+	appLogger.Debug(format, values...)
 }
 
 func Info(format string, values ...interface{}) {
-	appLogger.Info(format, values)
+	appLogger.Info(format, values...)
 }
 
 func Warn(format string, values ...interface{}) {
-	appLogger.Warn(format, values)
+	appLogger.Warn(format, values...)
 }
 
 func Error(format string, values ...interface{}) {
-	appLogger.Error(format, values)
+	appLogger.Error(format, values...)
 }

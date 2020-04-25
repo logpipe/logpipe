@@ -1,4 +1,5 @@
-path: example/
+pipe:
+  path: example/
 log:
   level: DEBUG
   path: logs

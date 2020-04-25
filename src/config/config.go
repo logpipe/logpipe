@@ -15,7 +15,9 @@ func init() {
 }
 
 type AppConf struct {
-	Path  string
+	Pipe struct {
+		Path string
+	}
 	Pipes map[string]PipeConf
 	Log   LogConf
 }
@@ -28,6 +30,7 @@ func LoadConf() error {
 	if err := loadPipeConf(); err != nil {
 		return err
 	}
+	log.Info("config file load finished")
 	return nil
 }
 func loadAppConf() error {
@@ -44,12 +47,7 @@ func loadAppConf() error {
 	if err != nil {
 		return err
 	}
-	confFile, err := os.Open(appConfPath)
-	if err != nil {
-		return err
-	}
-	defer confFile.Close()
-	value, err := NewValue(confFile)
+	value, err := readValue(appConfPath)
 	if err != nil {
 		return err
 	}
@@ -57,8 +55,8 @@ func loadAppConf() error {
 	if err != nil {
 		return err
 	}
-	if !filepath.IsAbs(appConf.Path) {
-		appConf.Path = filepath.Join(filepath.Dir(appConfPath), appConf.Path)
+	if !filepath.IsAbs(appConf.Pipe.Path) {
+		appConf.Pipe.Path = filepath.Join(filepath.Dir(appConfPath), appConf.Pipe.Path)
 	}
 	err = initLog()
 	if err != nil {
@@ -86,12 +84,13 @@ func initLog() error {
 	}
 
 	log.InitAppLogger(appConf.Log.Path, appConf.Log.Level)
+	log.Info("logging [%v] into %v", appConf.Log.Level, appConf.Log.Path)
 	return nil
 }
 
 func loadPipeConf() error {
-	path := appConf.Path
-
+	path := appConf.Pipe.Path
+	log.Info("scanning pipe conf file in %v", appConf.Pipe.Path)
 	dir, err := ioutil.ReadDir(path)
 	if err != nil {
 		return err
@@ -100,11 +99,11 @@ func loadPipeConf() error {
 		name := fi.Name()
 		if !fi.IsDir() && (strings.HasSuffix(name, ".yaml")) {
 			absPath := filepath.Join(path, name)
-			log.Info("loading example conf: " + absPath)
+			log.Info("loading pipe conf: %v", absPath)
 
 			err := readPipeConf(absPath)
 			if err != nil {
-				log.Error("loading %s error: %s", absPath, err)
+				log.Error("loading %v error: %v", absPath, err.Error())
 			}
 		}
 	}
@@ -112,16 +111,11 @@ func loadPipeConf() error {
 }
 
 func readPipeConf(path string) error {
-	file, err := os.Open(path)
+	value, err := readValue(path)
 	if err != nil {
 		return err
 	}
-	defer file.Close()
-	value, err := NewValue(file)
-	if err != nil {
-		return err
-	}
-	conf := PipeConf{}
+	conf := PipeConf{file: path}
 	err = value.Parse(&conf)
 	if err != nil {
 		return err

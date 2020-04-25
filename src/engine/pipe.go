@@ -3,24 +3,24 @@ package engine
 import (
 	"github.com/logpipe/logpipe/config"
 	"github.com/logpipe/logpipe/core"
-	log2 "github.com/logpipe/logpipe/log"
+	"github.com/logpipe/logpipe/log"
 	"github.com/logpipe/logpipe/plugin"
-	"log"
 )
 
-type Pipe struct {
+type pipe struct {
 	name     string
 	conf     config.PipeConf
 	consumer func(event core.Event)
-	inputs   []InputNode
-	filters  []FilterNode
-	outputs  []OutputNode
+	inputs   []inputNode
+	filters  []filterNode
+	outputs  []outputNode
 }
 
-func (p *Pipe) Init(pipeConf config.PipeConf) {
+func (p *pipe) Init(pipeConf config.PipeConf) {
+	log.Info("init pipe [%v] from %v", pipeConf.Name())
 	p.conf = pipeConf
-	logger := log2.NewLogger(pipeConf.Log().Path, pipeConf.Log().Level)
-	p.inputs = make([]InputNode, len(pipeConf.Inputs()))
+	logger := log.NewLogger(pipeConf.Log().Path, pipeConf.Log().Level)
+	p.inputs = make([]inputNode, len(pipeConf.Inputs()))
 	for i, conf := range pipeConf.Inputs() {
 		ctx := core.NewContext(p.name, conf.Name(), conf.Kind(), logger)
 		input := plugin.BuildInput(conf)
@@ -28,9 +28,9 @@ func (p *Pipe) Init(pipeConf config.PipeConf) {
 			container.SetContext(ctx)
 		}
 		actions := core.BuildActions(conf.Action())
-		p.inputs[i] = InputNode{input: input, action: actions}
+		p.inputs[i] = inputNode{name: conf.Name(), ctx: ctx, input: input, action: actions}
 	}
-	p.filters = make([]FilterNode, len(pipeConf.Filters()))
+	p.filters = make([]filterNode, len(pipeConf.Filters()))
 	for i, conf := range pipeConf.Filters() {
 		ctx := core.NewContext(p.name, conf.Name(), conf.Kind(), logger)
 		filter := plugin.BuildFilter(conf)
@@ -39,9 +39,9 @@ func (p *Pipe) Init(pipeConf config.PipeConf) {
 		}
 		cond := core.BuildConds(conf.Cond())
 		actions := core.BuildActions(conf.Action())
-		p.filters[i] = FilterNode{filter: filter, cond: cond, action: actions}
+		p.filters[i] = filterNode{name: conf.Name(), ctx: ctx, filter: filter, cond: cond, action: actions}
 	}
-	p.outputs = make([]OutputNode, len(pipeConf.Outputs()))
+	p.outputs = make([]outputNode, len(pipeConf.Outputs()))
 	for i, conf := range pipeConf.Outputs() {
 		ctx := core.NewContext(p.name, conf.Name(), conf.Kind(), logger)
 		output := plugin.BuildOutput(conf)
@@ -49,7 +49,7 @@ func (p *Pipe) Init(pipeConf config.PipeConf) {
 			container.SetContext(ctx)
 		}
 		cond := core.BuildConds(conf.Cond())
-		p.outputs[i] = OutputNode{output: output, cond: cond}
+		p.outputs[i] = outputNode{name: conf.Name(), ctx: ctx, output: output, cond: cond}
 	}
 	if p.conf.Async() {
 		p.consumer = func(event core.Event) {
@@ -62,12 +62,12 @@ func (p *Pipe) Init(pipeConf config.PipeConf) {
 	}
 }
 
-func (p *Pipe) Start() {
+func (p *pipe) Start() {
 	for _, node := range p.outputs {
 		if node.output != nil {
 			err := node.output.Start()
 			if err != nil {
-				log.Println(err)
+				log.Error("starting output plugin [%v] error: %v", node.name, err.Error())
 			}
 		}
 	}
@@ -82,19 +82,19 @@ func (p *Pipe) Start() {
 				}
 			})
 			if err != nil {
-				log.Println(err)
+				log.Error("starting input plugin [%v] error: %v", node.name, err.Error())
 			}
 		}
 	}
 }
 
-func (p *Pipe) Stop() {
+func (p *pipe) Stop() {
 
 	for _, node := range p.inputs {
 		if node.input != nil {
 			err := node.input.Stop()
 			if err != nil {
-				log.Println(err)
+				log.Error("stopping input plugin [%v] error: %v", node.name, err.Error())
 			}
 		}
 	}
@@ -103,13 +103,13 @@ func (p *Pipe) Stop() {
 		if node.output != nil {
 			err := node.output.Stop()
 			if err != nil {
-				log.Println(err)
+				log.Error("stopping output plugin [%v] error: %v", node.name, err.Error())
 			}
 		}
 	}
 }
 
-func (p *Pipe) input(event core.Event) {
+func (p *pipe) input(event core.Event) {
 	temp := event
 	if p.filters != nil && len(p.filters) > 0 {
 		for _, node := range p.filters {
@@ -136,7 +136,7 @@ func (p *Pipe) input(event core.Event) {
 				}
 				err := node.output.Output(temp)
 				if err != nil {
-					log.Println(err)
+					log.Error("outputting error: %v", err.Error())
 				}
 			}
 		}
