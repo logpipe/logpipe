@@ -1,3 +1,3 @@
 package filter
 
-import _ "github.com/tk103331/logpipe/plugins/filter/mutate"
+import _ "github.com/logpipe/logpipe/plugins/filter/mutate"

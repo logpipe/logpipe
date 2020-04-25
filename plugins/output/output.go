@@ -1,4 +1,4 @@
 package output
 
-import _ "github.com/tk103331/logpipe/plugins/output/file"
-import _ "github.com/tk103331/logpipe/plugins/output/stdout"
+import _ "github.com/logpipe/logpipe/plugins/output/file"
+import _ "github.com/logpipe/logpipe/plugins/output/stdout"

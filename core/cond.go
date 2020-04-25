@@ -1,7 +1,7 @@
 package core
 
 import (
-	"github.com/tk103331/logpipe/config"
+	"github.com/logpipe/logpipe/config"
 	"strings"
 )
 

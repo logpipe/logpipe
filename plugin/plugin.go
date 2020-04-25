@@ -1,8 +1,8 @@
 package plugin
 
 import (
-	"github.com/tk103331/logpipe/config"
-	"github.com/tk103331/logpipe/core"
+	"github.com/logpipe/logpipe/config"
+	"github.com/logpipe/logpipe/core"
 )
 
 var (

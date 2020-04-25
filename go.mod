@@ -1,4 +1,4 @@
-module github.com/tk103331/logpipe
+module github.com/logpipe/logpipe
 
 go 1.13
 

@@ -2,11 +2,11 @@ package file
 
 import (
 	"errors"
-	"github.com/tk103331/logpipe/config"
-	"github.com/tk103331/logpipe/plugin"
+	"github.com/logpipe/logpipe/config"
+	"github.com/logpipe/logpipe/plugin"
 	"os"
 )
-import "github.com/tk103331/logpipe/core"
+import "github.com/logpipe/logpipe/core"
 
 func init() {
 	plugin.RegOutput(&FileOutputBuilder{})

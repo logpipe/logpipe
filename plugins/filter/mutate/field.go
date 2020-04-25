@@ -1,6 +1,6 @@
 package mutate
 
-import "github.com/tk103331/logpipe/core"
+import "github.com/logpipe/logpipe/core"
 
 type AddFieldOp struct {
 	Field string

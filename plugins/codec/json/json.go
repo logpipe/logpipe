@@ -3,9 +3,9 @@ package json
 import (
 	"encoding/json"
 	"errors"
-	"github.com/tk103331/logpipe/config"
-	"github.com/tk103331/logpipe/core"
-	"github.com/tk103331/logpipe/plugin"
+	"github.com/logpipe/logpipe/config"
+	"github.com/logpipe/logpipe/core"
+	"github.com/logpipe/logpipe/plugin"
 )
 
 func init() {

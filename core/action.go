@@ -1,6 +1,6 @@
 package core
 
-import "github.com/tk103331/logpipe/config"
+import "github.com/logpipe/logpipe/config"
 
 var actions = make(map[string]ActionBuilder)
 

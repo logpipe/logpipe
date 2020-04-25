@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/tk103331/logpipe/config"
-	"github.com/tk103331/logpipe/engine"
-	_ "github.com/tk103331/logpipe/plugins"
+	"github.com/logpipe/logpipe/config"
+	"github.com/logpipe/logpipe/engine"
+	_ "github.com/logpipe/logpipe/plugins"
 	"log"
 )
 

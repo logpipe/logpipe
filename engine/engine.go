@@ -1,7 +1,7 @@
 package engine
 
 import (
-	"github.com/tk103331/logpipe/config"
+	"github.com/logpipe/logpipe/config"
 	"log"
 	"os"
 	"os/signal"

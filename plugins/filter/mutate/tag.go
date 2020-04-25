@@ -1,7 +1,7 @@
 package mutate
 
 import (
-	"github.com/tk103331/logpipe/core"
+	"github.com/logpipe/logpipe/core"
 )
 
 type AddTagOp struct {
