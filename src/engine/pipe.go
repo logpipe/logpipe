@@ -3,6 +3,7 @@ package engine
 import (
 	"github.com/logpipe/logpipe/config"
 	"github.com/logpipe/logpipe/core"
+	log2 "github.com/logpipe/logpipe/log"
 	"github.com/logpipe/logpipe/plugin"
 	"log"
 )
@@ -18,7 +19,7 @@ type Pipe struct {
 
 func (p *Pipe) Init(pipeConf config.PipeConf) {
 	p.conf = pipeConf
-	logger := core.NewLogger(pipeConf.Log().Path, pipeConf.Log().Level)
+	logger := log2.NewLogger(pipeConf.Log().Path, pipeConf.Log().Level)
 	p.inputs = make([]InputNode, len(pipeConf.Inputs()))
 	for i, conf := range pipeConf.Inputs() {
 		ctx := core.NewContext(p.name, conf.Name(), conf.Kind(), logger)

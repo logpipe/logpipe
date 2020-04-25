@@ -2,7 +2,7 @@ package engine
 
 import (
 	"github.com/logpipe/logpipe/config"
-	"log"
+	"github.com/logpipe/logpipe/log"
 	"os"
 	"os/signal"
 	"sync"
@@ -27,7 +27,7 @@ func Start() error {
 	wg.Add(len(pipes))
 	for name, pipe := range pipes {
 		go func(name string, p *Pipe) {
-			log.Println("starting example: " + name)
+			log.Info("starting %s", name)
 			p.Start()
 			wg.Done()
 		}(name, pipe)
@@ -41,7 +41,7 @@ func Stop() {
 	wg.Add(len(pipes))
 	for name, pipe := range pipes {
 		go func(name string, p *Pipe) {
-			log.Println("stopping example: " + name)
+			log.Info("stopping %s", name)
 			p.Stop()
 			wg.Done()
 		}(name, pipe)

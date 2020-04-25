@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"github.com/logpipe/logpipe/log"
 )
 
 type ContextContainer interface {
@@ -14,10 +15,10 @@ type Context struct {
 	name   string
 	kind   string
 	plugin string
-	logger *Logger
+	logger *log.Logger
 }
 
-func NewContext(pipe string, name string, kind string, logger *Logger) *Context {
+func NewContext(pipe string, name string, kind string, logger *log.Logger) *Context {
 	plugin := fmt.Sprintf(" [%s-%s-%s] ", pipe, kind, name)
 	return &Context{pipe: pipe, name: name, kind: kind, plugin: plugin, logger: logger}
 }

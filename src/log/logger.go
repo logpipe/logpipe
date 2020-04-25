@@ -1,4 +1,4 @@
-package core
+package log
 
 import (
 	"go.uber.org/zap"
@@ -6,24 +6,13 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-var levelMap = make(map[string]int)
-
-func init() {
-	levelMap["DEBUG"] = 1
-	levelMap["INFO"] = 2
-	levelMap["WARN"] = 3
-	levelMap["ERROR"] = 4
-}
-
 type Logger struct {
-	logger *zap.SugaredLogger
+	logLevel zap.AtomicLevel
+	logger   *zap.SugaredLogger
 }
-
-var logLevel = zap.NewAtomicLevel()
 
 func NewLogger(path string, level string) *Logger {
-
-	setLevel(level)
+	var logLevel = zap.NewAtomicLevel()
 	writer := zapcore.AddSync(&lumberjack.Logger{
 		Filename:  path,
 		MaxSize:   1024, //MB
@@ -33,7 +22,7 @@ func NewLogger(path string, level string) *Logger {
 
 	core := zapcore.NewCore(zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()), writer, logLevel)
 	logger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
-	return &Logger{logger: logger.Sugar()}
+	return &Logger{logger: logger.Sugar(), logLevel: logLevel}
 }
 
 func (l *Logger) Debug(format string, values ...interface{}) {
@@ -52,19 +41,19 @@ func (l *Logger) Error(format string, values ...interface{}) {
 	l.logger.Errorf(format, values)
 }
 
-func setLevel(level string) {
+func (l *Logger) setLevel(level string) {
 	switch level {
 	case "DEBUG":
-		logLevel.SetLevel(zapcore.DebugLevel)
+		l.logLevel.SetLevel(zapcore.DebugLevel)
 	case "INFO":
-		logLevel.SetLevel(zapcore.InfoLevel)
+		l.logLevel.SetLevel(zapcore.InfoLevel)
 	case "WARN":
-		logLevel.SetLevel(zapcore.WarnLevel)
+		l.logLevel.SetLevel(zapcore.WarnLevel)
 	case "ERROR":
-		logLevel.SetLevel(zapcore.ErrorLevel)
+		l.logLevel.SetLevel(zapcore.ErrorLevel)
 	case "FATAL":
-		logLevel.SetLevel(zapcore.FatalLevel)
+		l.logLevel.SetLevel(zapcore.FatalLevel)
 	default:
-		logLevel.SetLevel(zapcore.ErrorLevel)
+		l.logLevel.SetLevel(zapcore.ErrorLevel)
 	}
 }
