@@ -15,7 +15,8 @@ func init() {
 }
 
 type AppConf struct {
-	Pipe struct {
+	Plugins string
+	Pipe    struct {
 		Path string
 	}
 	Pipes map[string]PipeConf

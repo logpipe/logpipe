@@ -36,3 +36,7 @@ func Warn(format string, values ...interface{}) {
 func Error(format string, values ...interface{}) {
 	appLogger.Error(format, values...)
 }
+
+func Fatal(format string, values ...interface{}) {
+	appLogger.Fatal(format, values...)
+}

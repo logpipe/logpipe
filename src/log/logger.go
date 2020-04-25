@@ -41,6 +41,10 @@ func (l *Logger) Error(format string, values ...interface{}) {
 	l.logger.Errorf(format, values...)
 }
 
+func (l *Logger) Fatal(format string, values ...interface{}) {
+	l.logger.Fatalf(format, values...)
+}
+
 func (l *Logger) setLevel(level string) {
 	switch level {
 	case "DEBUG":
