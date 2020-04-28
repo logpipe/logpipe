@@ -4,4 +4,4 @@ build
 *.iml
 logs/*.log
 .vscode
-src/vendor
+vendor
