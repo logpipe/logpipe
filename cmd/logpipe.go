@@ -3,10 +3,10 @@
 package main
 
 import (
+	"github.com/logpipe/logpipe/config"
 	"github.com/logpipe/logpipe/engine"
 	"github.com/logpipe/logpipe/log"
 	"github.com/logpipe/logpipe/plugin"
-	"github.com/logpipe/logpipe/config"
 )
 
 func main() {
