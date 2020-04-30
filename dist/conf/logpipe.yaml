@@ -1,5 +1,0 @@
-pipe:
-  path: example/
-log:
-  level: DEBUG
-  path: logs
