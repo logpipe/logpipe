@@ -16,11 +16,25 @@ type Context struct {
 	kind   string
 	plugin string
 	logger *log.Logger
+	vars   map[string]interface{}
 }
 
-func NewContext(pipe string, name string, kind string, logger *log.Logger) *Context {
+func NewContext(pipe string, name string, kind string, logger *log.Logger, vars map[string]interface{}) *Context {
 	plugin := fmt.Sprintf(" [%s-%s-%s] ", pipe, kind, name)
-	return &Context{pipe: pipe, name: name, kind: kind, plugin: plugin, logger: logger}
+	return &Context{pipe: pipe, name: name, kind: kind, plugin: plugin, logger: logger, vars: vars}
+}
+
+func (c *Context) GetVar(name string) interface{} {
+	return c.vars[name]
+}
+
+func (c *Context) SetVar(name string, value interface{}) {
+	c.vars[name] = value
+}
+
+func (c *Context) HasVar(name string) bool {
+	_, ok := c.vars[name]
+	return ok
 }
 
 func (c *Context) Debug(format string, values ...interface{}) {

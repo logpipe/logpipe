@@ -10,6 +10,7 @@ type PipeConf struct {
 	inputs  []InputConf
 	filters []FilterConf
 	outputs []OutputConf
+	vars    map[string]interface{}
 }
 
 func (p *PipeConf) Load(value *Value) error {
@@ -38,6 +39,10 @@ func (p *PipeConf) Load(value *Value) error {
 	if err != nil {
 		return err
 	}
+	err = value.Get("vars").Parse(p.vars)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -61,4 +66,7 @@ func (p *PipeConf) Filters() []FilterConf {
 }
 func (p *PipeConf) Outputs() []OutputConf {
 	return p.outputs
+}
+func (p *PipeConf) Vars() map[string]interface{} {
+	return p.vars
 }

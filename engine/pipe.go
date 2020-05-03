@@ -18,11 +18,12 @@ type pipe struct {
 
 func (p *pipe) Init(pipeConf config.PipeConf) {
 	log.Info("init pipe [%v] from %v", pipeConf.Name(), pipeConf.File())
+	vars := pipeConf.Vars()
 	p.conf = pipeConf
 	logger := log.NewLogger(pipeConf.Log().Path, pipeConf.Log().Level)
 	p.inputs = make([]inputNode, len(pipeConf.Inputs()))
 	for i, conf := range pipeConf.Inputs() {
-		ctx := core.NewContext(p.name, conf.Name(), conf.Kind(), logger)
+		ctx := core.NewContext(p.name, conf.Name(), conf.Kind(), logger, vars)
 		input := plugin.BuildInput(conf)
 		if container, ok := input.(core.ContextContainer); ok {
 			container.SetContext(ctx)
@@ -32,7 +33,7 @@ func (p *pipe) Init(pipeConf config.PipeConf) {
 	}
 	p.filters = make([]filterNode, len(pipeConf.Filters()))
 	for i, conf := range pipeConf.Filters() {
-		ctx := core.NewContext(p.name, conf.Name(), conf.Kind(), logger)
+		ctx := core.NewContext(p.name, conf.Name(), conf.Kind(), logger, vars)
 		filter := plugin.BuildFilter(conf)
 		if container, ok := filter.(core.ContextContainer); ok {
 			container.SetContext(ctx)
@@ -43,7 +44,7 @@ func (p *pipe) Init(pipeConf config.PipeConf) {
 	}
 	p.outputs = make([]outputNode, len(pipeConf.Outputs()))
 	for i, conf := range pipeConf.Outputs() {
-		ctx := core.NewContext(p.name, conf.Name(), conf.Kind(), logger)
+		ctx := core.NewContext(p.name, conf.Name(), conf.Kind(), logger, vars)
 		output := plugin.BuildOutput(conf)
 		if container, ok := output.(core.ContextContainer); ok {
 			container.SetContext(ctx)
