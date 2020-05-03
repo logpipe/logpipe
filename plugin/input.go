@@ -28,6 +28,7 @@ func RegisterInputBuilder(builder InputBuilder) bool {
 	inputLock.Lock()
 	defer inputLock.Unlock()
 	kind := builder.Kind()
+	log.Info("register input plugin [%v]", kind)
 	if _, ok := inputBuilders[kind]; ok {
 		log.Error("register input plugin [%v] error: plugin already exist", kind)
 		return false

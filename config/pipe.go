@@ -14,6 +14,7 @@ type PipeConf struct {
 
 func (p *PipeConf) Load(value *Value) error {
 	p.name = value.GetString("name")
+	p.file = value.file
 	p.async = value.GetBool("async")
 	value.Get("log").Parse(&(p.log))
 	if p.log.Level == "" {
@@ -42,6 +43,9 @@ func (p *PipeConf) Load(value *Value) error {
 
 func (p *PipeConf) Name() string {
 	return p.name
+}
+func (p *PipeConf) File() string {
+	return p.file
 }
 func (p *PipeConf) Async() bool {
 	return p.async

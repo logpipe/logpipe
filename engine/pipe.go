@@ -17,7 +17,7 @@ type pipe struct {
 }
 
 func (p *pipe) Init(pipeConf config.PipeConf) {
-	log.Info("init pipe [%v] from %v", pipeConf.Name())
+	log.Info("init pipe [%v] from %v", pipeConf.Name(), pipeConf.File())
 	p.conf = pipeConf
 	logger := log.NewLogger(pipeConf.Log().Path, pipeConf.Log().Level)
 	p.inputs = make([]inputNode, len(pipeConf.Inputs()))

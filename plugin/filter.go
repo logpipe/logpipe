@@ -28,6 +28,7 @@ func RegisterFilterBuilder(builder FilterBuilder) bool {
 	filterLock.Lock()
 	defer filterLock.Unlock()
 	kind := builder.Kind()
+	log.Info("register filter plugin [%v]", kind)
 	if _, ok := filterBuilders[kind]; ok {
 		log.Error("register filter plugin [%v] error: plugin already exist", kind)
 		return false

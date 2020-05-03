@@ -28,6 +28,7 @@ func RegisterOutputBuilder(builder OutputBuilder) bool {
 	outputLock.Lock()
 	defer outputLock.Unlock()
 	kind := builder.Kind()
+	log.Info("register output plugin [%v]", kind)
 	if _, ok := outputBuilders[kind]; ok {
 		log.Error("register output plugin [%v] error: plugin already exist", kind)
 		return false

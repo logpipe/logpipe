@@ -28,6 +28,7 @@ func RegisterCodecBuilder(builder CodecBuilder) bool {
 	codecLock.Lock()
 	defer codecLock.Unlock()
 	kind := builder.Kind()
+	log.Info("register codec plugin [%v]", kind)
 	if _, ok := codecBuilders[kind]; ok {
 		log.Error("register codec plugin [%v] error: plugin already exist", kind)
 		return false
