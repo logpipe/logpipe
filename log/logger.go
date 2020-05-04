@@ -4,6 +4,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
+	"os"
 )
 
 type Logger struct {
@@ -12,17 +13,7 @@ type Logger struct {
 }
 
 func NewLogger(path string, level string) *Logger {
-	var logLevel = zap.NewAtomicLevel()
-	writer := zapcore.AddSync(&lumberjack.Logger{
-		Filename:  path,
-		MaxSize:   1024, //MB
-		LocalTime: true,
-		Compress:  true,
-	})
-
-	core := zapcore.NewCore(zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()), writer, logLevel)
-	logger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(2))
-	return &Logger{logger: logger.Sugar(), logLevel: logLevel}
+	return newFileLogger(path, level)
 }
 
 func (l *Logger) Debug(format string, values ...interface{}) {
@@ -60,4 +51,30 @@ func (l *Logger) setLevel(level string) {
 	default:
 		l.logLevel.SetLevel(zapcore.ErrorLevel)
 	}
+}
+
+func newFileLogger(path string, level string) *Logger {
+	var logLevel = zap.NewAtomicLevel()
+	writer := zapcore.AddSync(&lumberjack.Logger{
+		Filename:  path,
+		MaxSize:   1024, //MB
+		LocalTime: true,
+		Compress:  true,
+	})
+
+	core := zapcore.NewCore(zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()), writer, logLevel)
+	l := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(2))
+	logger := &Logger{logger: l.Sugar(), logLevel: logLevel}
+	logger.setLevel(level)
+	return logger
+}
+
+func newStdoutLogger(level string) *Logger {
+	var logLevel = zap.NewAtomicLevel()
+	writer := zapcore.AddSync(os.Stdout)
+	core := zapcore.NewCore(zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()), writer, logLevel)
+	l := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(2))
+	logger := &Logger{logger: l.Sugar(), logLevel: logLevel}
+	logger.setLevel(level)
+	return logger
 }

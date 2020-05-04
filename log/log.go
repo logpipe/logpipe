@@ -6,16 +6,18 @@ import (
 
 var levelMap = make(map[string]int)
 var appLogger *Logger
+var once = sync.Once{}
 
 func init() {
 	levelMap["DEBUG"] = 1
 	levelMap["INFO"] = 2
 	levelMap["WARN"] = 3
 	levelMap["ERROR"] = 4
+
+	appLogger = newStdoutLogger("DEBUG")
 }
 
 func InitAppLogger(path string, level string) {
-	once := sync.Once{}
 	once.Do(func() {
 		appLogger = NewLogger(path, level)
 	})
