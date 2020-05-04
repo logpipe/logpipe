@@ -13,6 +13,7 @@ import (
 
 const plugin_dir = "plugins/"
 const plugin_ext = ".so"
+const plugin_register = "Register"
 
 func LoadPlugins() error {
 	appConf := config.GetAppConf()
@@ -49,8 +50,21 @@ func LoadPlugins() error {
 }
 
 func load(path string) {
-	_, err := plugin.Open(path)
+	p, err := plugin.Open(path)
 	if err != nil {
 		log.Error("loading plugin [%v] error: %v", path, err.Error())
+	}
+	symbol, err := p.Lookup(plugin_register)
+	if err != nil {
+		log.Error("lookup Register func in [%v] error: %v", path, err.Error())
+	}
+	if register, ok := symbol.(func()); ok {
+		func() {
+			defer func() {
+				err := recover()
+				log.Error("call Register func error: %v", err)
+			}()
+			register()
+		}()
 	}
 }
