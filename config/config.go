@@ -19,6 +19,9 @@ type AppConf struct {
 	Pipe    struct {
 		Path string
 	}
+	Data struct {
+		Path string
+	}
 	Pipes map[string]PipeConf
 	Log   LogConf
 }
@@ -58,6 +61,9 @@ func loadAppConf() error {
 	}
 	if !filepath.IsAbs(appConf.Pipe.Path) {
 		appConf.Pipe.Path = filepath.Join(filepath.Dir(appConfPath), appConf.Pipe.Path)
+	}
+	if !filepath.IsAbs(appConf.Data.Path) {
+		appConf.Data.Path = filepath.Join(filepath.Dir(appConfPath), appConf.Data.Path)
 	}
 	err = initLog()
 	if err != nil {

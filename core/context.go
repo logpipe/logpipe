@@ -2,7 +2,9 @@ package core
 
 import (
 	"fmt"
+	"github.com/logpipe/logpipe/config"
 	"github.com/logpipe/logpipe/log"
+	"path/filepath"
 )
 
 type ContextContainer interface {
@@ -14,6 +16,7 @@ type Context struct {
 	pipe   string
 	name   string
 	kind   string
+	path   string
 	plugin string
 	logger *log.Logger
 	vars   map[string]interface{}
@@ -21,7 +24,12 @@ type Context struct {
 
 func NewContext(pipe string, name string, kind string, logger *log.Logger, vars map[string]interface{}) *Context {
 	plugin := fmt.Sprintf(" [%s-%s-%s] ", pipe, kind, name)
-	return &Context{pipe: pipe, name: name, kind: kind, plugin: plugin, logger: logger, vars: vars}
+	path := filepath.Join(config.GetAppConf().Data.Path, plugin)
+	return &Context{pipe: pipe, name: name, kind: kind, path: path, plugin: plugin, logger: logger, vars: vars}
+}
+
+func (c *Context) Path() string {
+	return c.path
 }
 
 func (c *Context) GetVar(name string) interface{} {

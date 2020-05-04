@@ -33,6 +33,7 @@ func DebugOutput(output core.Output) {
 func debug(input core.Input, filter core.Filter, output core.Output) {
 	p := pipe{}
 	p.Init(config.PipeConf{})
+	p.name = "debug"
 	p.inputs = make([]inputNode, 1)
 	if input == nil {
 		input = &buildin.StdinInput{}
