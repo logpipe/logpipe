@@ -24,7 +24,7 @@ type Context struct {
 
 func NewContext(pipe string, name string, kind string, logger *log.Logger, vars map[string]interface{}) *Context {
 	plugin := fmt.Sprintf(" [%s-%s-%s] ", pipe, kind, name)
-	path := filepath.Join(config.GetAppConf().Data.Path, plugin)
+	path := filepath.Join(config.GetAppConf().Data.Path, pipe, kind+"-"+name)
 	return &Context{pipe: pipe, name: name, kind: kind, path: path, plugin: plugin, logger: logger, vars: vars}
 }
 
